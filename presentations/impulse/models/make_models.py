@@ -48,6 +48,13 @@ def materials():
         "fold": custom_mat("Impulse · neural folds", (0.44, 0.15, 0.18), 0.02, 0.5),
         "glass": custom_mat("Impulse · frosted glass", (0.20, 0.66, 0.70), 0.0, 0.24),
         "graphite": custom_mat("Impulse · graphite", (0.07, 0.09, 0.12), 0.68, 0.34),
+        "nut": custom_mat("Impulse · chestnut shell", (0.34, 0.095, 0.026), 0.08, 0.24),
+        "nut_light": custom_mat("Impulse · chestnut hilum", (0.89, 0.65, 0.38), 0.0, 0.58),
+        "husk": custom_mat("Impulse · chestnut husk", (0.20, 0.42, 0.12), 0.0, 0.63),
+        "eye_white": custom_mat("Impulse · eye white", (0.98, 0.92, 0.78), 0.0, 0.24),
+        "pupil": custom_mat("Impulse · pupil", (0.025, 0.018, 0.016), 0.0, 0.18),
+        "cheek": custom_mat("Impulse · cheek", (0.96, 0.28, 0.22), 0.0, 0.48),
+        "limb": custom_mat("Impulse · limb", (0.93, 0.72, 0.47), 0.0, 0.42),
     }
 
 
@@ -89,6 +96,64 @@ def m_phone():
                          "loc": (0, 0, pulse)}}
     return rig, anim, 4.0
 
+
+
+def m_chestnut():
+    """A friendly animated chestnut mascot; the recurring meme character of the deck."""
+    c = materials()
+    rig = Rig()
+    body_mark = rig.mark()
+    # A tapered, glossy nut shell with a pale hilum and a small green burr crown.
+    lathe("chestnut_shell", [(0, -0.62), (0.18, -0.60), (0.36, -0.52), (0.49, -0.37),
+                             (0.55, -0.13), (0.52, 0.10), (0.43, 0.32), (0.28, 0.50),
+                             (0.14, 0.62), (0, 0.68)], c["nut"], 64, 42)
+    patch = sphere("chestnut_hilum", 0.19, (0, -0.39, -0.38), c["nut_light"], 32, 16)
+    patch.scale = (1.04, 0.18, 0.54)
+    # Expressive face on the front (+ camera faces -Y): eyes, brows, cheeks and a smile.
+    for side in (-1, 1):
+        sphere(f"eye_white_{side}", 0.073, (side * 0.15, -0.447, 0.12), c["eye_white"], 28, 16)
+        sphere(f"pupil_{side}", 0.033, (side * 0.15, -0.505, 0.115), c["pupil"], 20, 12)
+        tube(f"brow_{side}", [(side * 0.24, -0.475, 0.25), (side * 0.16, -0.51, 0.28),
+                               (side * 0.08, -0.49, 0.26)], 0.018, c["nut_light"], 3, False)
+        sphere(f"cheek_{side}", 0.047, (side * 0.285, -0.438, -0.03), c["cheek"], 20, 12)
+    sphere("nose", 0.028, (0, -0.529, 0.015), c["nut_light"], 16, 8)
+    tube("smile", [(-0.12, -0.505, -0.065), (-0.07, -0.524, -0.105),
+                    (0, -0.531, -0.12), (0.07, -0.524, -0.105), (0.12, -0.505, -0.065)],
+         0.014, c["pupil"], 3, False)
+    # Five short green points read as the spiky husk from the original chestnut photograph.
+    from mathutils import Vector
+    for i in range(5):
+        a = TAU * i / 5 - math.pi / 2
+        direction = Vector((0.50 * math.cos(a), 0.50 * math.sin(a), 0.84)).normalized()
+        bpy.ops.mesh.primitive_cone_add(vertices=12, radius1=0.075, radius2=0.004, depth=0.23,
+                                        location=(0.06 * math.cos(a), 0.06 * math.sin(a), 0.60))
+        spike = bpy.context.active_object
+        spike.name = f"husk_spike_{i}"
+        spike.rotation_euler = direction.to_track_quat("Z", "Y").to_euler()
+        mm.finish(spike, c["husk"], 24, 0.004, 2)
+    cyl("stem", 0.035, 0.13, (0, 0, 0.70), c["nut"], rot=(0, math.radians(-8), 0), seg=20)
+    # Tiny arms make the photo-derived chestnut a readable character, not a food mascot logo.
+    tube("left_arm", [(-0.47, -0.015, -0.015), (-0.63, -0.055, 0.05), (-0.70, -0.055, -0.02)],
+         0.027, c["limb"], 4, False)
+    sphere("left_hand", 0.064, (-0.72, -0.055, -0.025), c["nut_light"], 20, 12)
+    rig.take(body_mark, "body", head=(0, 0, 0))
+
+    wave_mark = rig.mark()
+    tube("right_arm", [(0.46, -0.015, 0.02), (0.61, -0.045, 0.16), (0.68, -0.045, 0.31)],
+         0.028, c["limb"], 4, False)
+    sphere("right_hand", 0.075, (0.69, -0.045, 0.35), c["nut_light"], 22, 14)
+    sphere("hand_thumb", 0.035, (0.75, -0.047, 0.39), c["nut_light"], 16, 10)
+    rig.take(wave_mark, "wave", head=(0.45, -0.015, 0.02))
+
+    def anim(t):
+        q = math.sin(TAU * t)
+        return {
+            "body": {"loc": (0, 0, 0.035 * (1 - math.cos(TAU * t))),
+                     "rot": [((0, 1, 0), 3.5 * q)]},
+            "wave": {"rot": [((0, 1, 0), 30.0 * math.sin(TAU * 2 * t)),
+                              ((0, 0, 1), 5.0 * q)]},
+        }
+    return rig, anim, 4.0
 
 def m_brain():
     """A stylised brain with a pulsing choice-signal; not a literal neural scan."""
@@ -269,6 +334,7 @@ def m_bag():
 
 
 MODELS = {
+    "chestnut": m_chestnut,
     "phone": m_phone,
     "brain": m_brain,
     "paylater": m_paylater,

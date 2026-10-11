@@ -5,7 +5,7 @@ const fs = require("fs");
 const path = require("path");
 
 const W = 13.333, H = 7.5;
-const FONTS = { head: "Georgia", body: "Arial" };
+const FONTS = { head: "Georgia", body: "Arial", meme: "Impact" };
 
 class Slide {
   constructor(opts) {

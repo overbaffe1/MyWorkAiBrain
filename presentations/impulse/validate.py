@@ -12,7 +12,7 @@ PPTX = os.path.join(ROOT, "exports", "impulse-buying-3d-presentation.pptx")
 GLB_DIR = os.path.join(os.path.dirname(__file__), "models", "glb")
 AM3D = "http://schemas.microsoft.com/office/drawing/2017/model3d"
 A3D = "http://schemas.microsoft.com/office/drawing/2018/animation/model3d"
-ANIMATED = {"phone", "brain", "paylater", "clipboard", "timer", "bag", "scales"}
+ANIMATED = {"phone", "brain", "paylater", "clipboard", "timer", "bag", "scales", "chestnut"}
 
 def gltf_json(path):
     data = open(path, "rb").read()
