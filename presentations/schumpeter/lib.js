@@ -139,7 +139,8 @@ function htmlText(e) {
     ].join(";");
     const spans = p.map((r) => {
       const o = runOpts(r, e);
-      const fam = o.fontFace === "Georgia" ? "'NotoSerifPreview', Georgia, serif" : "'ArimoPreview', Arial, sans-serif";
+      const fam = o.fontFace === "Georgia" ? "'NotoSerifPreview', Georgia, serif"
+        : "'ArimoPreview', 'NotoSansPreview', Arial, sans-serif";
       return `<span style="font-family:${fam};font-size:${o.fontSize * 2}px;color:${hex(o.color)};font-weight:${o.bold ? 700 : 400};font-style:${o.italic ? "italic" : "normal"};letter-spacing:${(o.charSpacing || 0) * 2}px">${esc(r.text)}</span>`;
     }).join("");
     const b = bullet ? `<span style="display:inline-block;width:${o0.fontSize * 2 * 1.1}px;text-indent:0;color:${hex(o0.color)};font-size:${o0.fontSize * 2}px">•</span>` : "";
@@ -160,6 +161,9 @@ function toHtml(slides, assetsDir, fontsDir) {
     faces.push(font("NotoSerifPreview", `noto-serif/files/noto-serif-${sub}-400-normal.woff2`, 400, "normal"));
     faces.push(font("NotoSerifPreview", `noto-serif/files/noto-serif-${sub}-700-normal.woff2`, 700, "normal"));
     faces.push(font("NotoSerifPreview", `noto-serif/files/noto-serif-${sub}-400-italic.woff2`, 400, "italic"));
+    faces.push(font("NotoSansPreview", `noto-sans/files/noto-sans-${sub}-400-normal.woff2`, 400, "normal"));
+    faces.push(font("NotoSansPreview", `noto-sans/files/noto-sans-${sub}-700-normal.woff2`, 700, "normal"));
+    faces.push(font("NotoSansPreview", `noto-sans/files/noto-sans-${sub}-400-italic.woff2`, 400, "italic"));
   }
   return slides.map((s) => {
     const parts = s.els.map((e) => {
