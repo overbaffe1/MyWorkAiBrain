@@ -1,51 +1,38 @@
-# «Каштан в корзине» — 3D-презентация об импульсивных тратах
+# Покупка на автопилоте — редизайн `ekonomika123.pptx`
 
-Переработка `ekonomika123.pptx` в 9-слайдовую редактируемую PowerPoint-презентацию. Сохраняются тема исходника, исследовательская логика, самоирония и отдельные мемы; оригинальное фото каштанов оставлено, а каштан дополнительно стал процедурной 3D-моделью-маскотом.
+Десять слайдов о психологии импульсивных трат. Сохранена лёгкая мемная интонация исходника и его каштановая фотография; к ней добавлен повторяющийся процедурный 3D-персонаж Каштан. Мемы перенесены из оригинального файла и используются как иллюстрации, не как данные.
 
-## Что внутри
+## Что изменено
 
-- Настоящие модели PowerPoint 3D (`am3d:model3d`, glTF `.glb` внутри `.pptx`), а не только 3D-картинки.
-- Бесшовные анимации на костях: каштан машет, телефон мигает уведомлением, товары подпрыгивают в корзине, кошелёк шевелит картой и монетой.
-- Переходы Morph между слайдами; обычная картинка остаётся fallback для просмотрщиков без поддержки 3D.
-- Текст выступления — в заметках докладчика и в `exports/impulse-spending-presentation-script.md`.
-- Полные источники, границы данных и формулировок — `exports/impulse-spending-sources.md`.
-- Мемы и фото каштанов взяты из исходной презентации; данные исследования не придуманы — опрос обозначен как план.
+- Оставлена тема исходного проекта: импульсивные покупки и студенты 18–25 лет.
+- Переработана структура: определение → механизм → возможные триггеры → вопрос и гипотезы → план опроса → практическая памятка.
+- Непроверенные числа о BNPL и законе из черновика не повторяются как факты; тема оплаты частями оставлена как возможная переменная анкеты.
+- N ≥ 50 обозначено как планируемый набор, а не уже полученная выборка. Результаты опроса не придуманы.
+- Все десять слайдов содержат настоящую 3D-модель PowerPoint с skinned glTF-анимацией, Morph-переходы и заметки докладчика; файл источников отдельно связывает утверждения с публикациями и помечает статус плана/гипотез.
+- Главный файл на месте исходной ссылки: `../../ekonomika123.pptx`.
 
 ## Сборка
 
-Один раз подготовить bpy, Node-зависимости и headless-библиотеки:
-
 ```bash
 bash presentations/tools/setup-env.sh
-```
-
-Затем из этой папки:
-
-```bash
+cd presentations/impulse
+python3 stage.py
+LD_LIBRARY_PATH=/tmp/bstub python3 models/make_models.py kashtan
 node build.js --preview
+python3 preview_sheet.py
+LD_LIBRARY_PATH=/tmp/bstub FRAMES=10 PX=300 SAMPLES=10 python3 models/anim_preview.py
+cp preview/kashtan-animation.gif ../../exports/impulse-spending-animations-preview.gif
+python3 validate.py
 ```
 
-Результаты:
+`node build.js --preview --only=2,5` can be used for quick layout checks; `FAST=1 node build.js --preview` renders a low-resolution draft. PowerPoint assets are produced by the shared repo pipeline (`presentations/schumpeter/lib.js`, `pptx3d.js`, and `models/render.py`). The mascot uses `presentations/cantillon/models/rig.py` for the tested skinned-animation exporter.
 
-```text
-../../exports/impulse-spending-3d.pptx
-../../exports/impulse-spending-presentation-script.md
-../../exports/impulse-spending-sources.md
-preview/slide-01.png … preview/slide-09.png
-```
+## Output
 
-Быстрый черновик: `FAST=1 node build.js --preview` (постеры моделей рендерятся в меньшем разрешении).
+- `ekonomika123.pptx` — editable 16:9 PowerPoint deck, 10 slides, real 3D GLB models, auto-playing animation and Morph.
+- `exports/impulse-spending-script.md` — speaker script, also placed in slide notes.
+- `exports/impulse-spending-sources.md` — source-to-slide map, limitations and full bibliography.
+- `exports/impulse-spending-preview.jpg` — 2×5 slide overview.
+- `exports/impulse-spending-animations-preview.gif` — loop preview of the mascot animation.
 
-Раскадровка циклов анимации и общий GIF-превью:
-
-```bash
-LD_LIBRARY_PATH=/tmp/bstub GLB_DIR="$PWD/models/glb" FRAMES=8 PX=280 SAMPLES=8 \\
-  python3 ../cantillon/models/anim_preview.py chestnut smartphone cart wallet
-python3 models/combine_anim_gifs.py ../cantillon/models/_anim ../../exports/impulse-spending-animations-preview.gif
-```
-
-## Модели
-
-`models/make_models.py` создаёт процедурные модели `chestnut`, `smartphone`, `cart`, `wallet` в Blender. Используется общий движок из `presentations/schumpeter/lib.js` и `pptx3d.js`, а также `presentations/cantillon/models/rig.py` для skinned-анимации.
-
-Анимации встроены как glTF skin + PowerPoint effect «Scene». Они автоматически проигрываются в PowerPoint 365 / 2021+; в Google Slides, Keynote, LibreOffice и браузерных просмотрщиках может отображаться статичный PNG-fallback.
+3D playback and Morph are intended for PowerPoint 365 / PowerPoint 2021+; apps without native PowerPoint 3D display the embedded still-image fallback. The survey is still a plan: only report results after collecting and analyzing responses.

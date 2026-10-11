@@ -1,308 +1,223 @@
-# Procedural, looping PowerPoint 3D exhibits for the impulse-spending deck.
-# Built in Blender (bpy); all geometry and animation are local and reproducible.
-#
-#   LD_LIBRARY_PATH=/tmp/bstub python3 models/make_models.py
-#   LD_LIBRARY_PATH=/tmp/bstub python3 models/make_models.py chestnut smartphone cart wallet
+"""Procedural 3D mascot for the impulse-spending deck (Blender bpy -> GLB).
+
+The glossy brown chestnut, little face, spiky green burr, arms and floating coin are
+all modelled here. The animation is skinned (one armature / one loop), so PowerPoint
+can play it as a real animated 3D model rather than as a video.
+"""
+from __future__ import annotations
+
+import importlib.util
 import math
 import os
 import sys
 
+import bpy
+import bmesh
+from mathutils import Vector
+
 HERE = os.path.dirname(os.path.abspath(__file__))
-SCH_MODELS = os.path.join(HERE, "..", "..", "schumpeter", "models")
-sys.path.insert(0, SCH_MODELS)
-import make_models as mm  # noqa: E402
-from make_models import bpy, Vector, box, cyl, sphere, torus, tube  # noqa: E402
-CANT_MODELS = os.path.join(HERE, "..", "..", "cantillon", "models")
-sys.path.insert(0, CANT_MODELS)
+OUT = os.path.join(HERE, "glb")
+os.makedirs(OUT, exist_ok=True)
+REPO = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+SHARED_MODELS = os.path.join(REPO, "presentations", "schumpeter", "models", "make_models.py")
+CANTILLON_MODELS = os.path.join(REPO, "presentations", "cantillon", "models")
+
+# Use the shared modelling helpers and the repository's tested skinned-glTF exporter.
+spec = importlib.util.spec_from_file_location("_shared_make_models", SHARED_MODELS)
+shared = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = shared
+spec.loader.exec_module(shared)
+
+# rig.py imports `make_models`; point it at this module so it sees OUT/apply_all below.
+sys.modules["make_models"] = sys.modules[__name__]
+sys.path.insert(0, CANTILLON_MODELS)
 from rig import Rig, export_rigged  # noqa: E402
 
-mm.OUT = os.path.join(HERE, "glb")
-os.makedirs(mm.OUT, exist_ok=True)
+# Methods expected by the shared Rig exporter when it imports this module as make_models.
+apply_all = shared.apply_all
+rot_all = shared.rot_all
+_mats = shared._mats
+
+def shift_all(dx=0.0, dy=0.0, dz=0.0):
+    for obj in bpy.context.scene.objects:
+        obj.location.x += dx
+        obj.location.y += dy
+        obj.location.z += dz
 TAU = math.tau
 
 
-def material(name, rgb, roughness=0.4, metallic=0.0, coat=0.0, emit=None):
-    m = bpy.data.materials.new(name)
-    m.diffuse_color = (*rgb, 1)
-    m.use_nodes = True
-    bsdf = m.node_tree.nodes.get("Principled BSDF")
-    bsdf.inputs["Base Color"].default_value = (*rgb, 1)
+def pbr(name, color, roughness=0.36, metallic=0.0, coat=0.0):
+    mat = bpy.data.materials.new(name)
+    mat.diffuse_color = (*color, 1)
+    mat.use_nodes = True
+    bsdf = mat.node_tree.nodes.get("Principled BSDF")
+    bsdf.inputs["Base Color"].default_value = (*color, 1)
     bsdf.inputs["Roughness"].default_value = roughness
     bsdf.inputs["Metallic"].default_value = metallic
-    if coat:
+    if "Coat Weight" in bsdf.inputs:
         bsdf.inputs["Coat Weight"].default_value = coat
-    if emit:
-        bsdf.inputs["Emission Color"].default_value = (*emit[0], 1)
-        bsdf.inputs["Emission Strength"].default_value = emit[1]
-    return m
+    return mat
 
 
-def prepare():
-    mm.reset()
-    mm._mats.clear()
-    return {
-        "shell": material("chestnut_glaze", (0.34, 0.105, 0.028), 0.24, 0.04, 0.42),
-        "shell_light": material("nut_highlight", (0.55, 0.24, 0.055), 0.31, 0.02, 0.32),
-        "burr": material("burr_green", (0.15, 0.30, 0.045), 0.62, 0.0, 0.08),
-        "cream": material("cream", (0.92, 0.72, 0.43), 0.7),
-        "white": material("eye_white", (0.98, 0.91, 0.76), 0.3),
-        "black": material("pupil", (0.018, 0.013, 0.012), 0.24),
-        "pink": material("cheek", (0.76, 0.20, 0.13), 0.55),
-        "screen": material("screen", (0.025, 0.055, 0.11), 0.25, 0.12, 0.25),
-        "teal": material("teal", (0.03, 0.49, 0.46), 0.3, 0.2, 0.18),
-        "mint": material("mint", (0.34, 0.82, 0.66), 0.34),
-        "coral": material("coral", (0.96, 0.22, 0.17), 0.34, 0.05, 0.2),
-        "gold": material("gold", (0.93, 0.56, 0.15), 0.3, 0.62, 0.2),
-        "cream_paper": material("paper", (0.95, 0.84, 0.62), 0.82),
-        "leather": material("wallet_leather", (0.19, 0.061, 0.028), 0.48, 0.0, 0.25),
-        "leather_light": material("wallet_edge", (0.43, 0.17, 0.062), 0.52, 0.0, 0.16),
-        "metal": material("cart_metal", (0.39, 0.48, 0.49), 0.3, 0.76),
-        "rubber": material("wheel_rubber", (0.035, 0.044, 0.05), 0.82),
-        "plum": material("plum", (0.45, 0.075, 0.25), 0.4, 0.04, 0.16),
-        "blue": material("blue", (0.04, 0.25, 0.78), 0.34, 0.13, 0.16),
-        "green": material("product_green", (0.18, 0.53, 0.18), 0.42),
-    }
-
-
-def mesh_sphere(name, loc, scale, mat, segments=48, rings=32):
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=segments, ring_count=rings, radius=1, location=loc)
-    o = bpy.context.object
-    o.name = name
+def oval(name, loc, scale, mat, seg=24, rings=14):
+    o = shared.sphere(name, 1.0, loc, mat, seg, rings)
     o.scale = scale
-    return mm.finish(o, mat, 80)
+    return o
 
 
-def cone_to(name, base, direction, radius, length, mat):
+def chestnut_shell():
+    """A custom, softly pointed nut mesh, fuller at the bottom like a real chestnut."""
+    seg, levels = 40, 24
+    verts = [(0.0, 0.0, 0.015)]
+    rings = []
+    for i in range(1, levels):
+        u = i / levels
+        z = 0.015 + 0.79 * u
+        profile = max(0.0, math.sin(math.pi * u)) ** 0.66
+        radius = 0.46 * profile * (0.88 + 0.18 * (1.0 - u))
+        cx = 0.018 * math.sin(math.pi * u)
+        ring = []
+        for j in range(seg):
+            a = TAU * j / seg
+            ring.append(len(verts))
+            verts.append((cx + radius * math.cos(a), radius * 0.72 * math.sin(a), z))
+        rings.append(ring)
+    top = len(verts)
+    verts.append((0.0, 0.0, 0.805))
+    faces = []
+    first = rings[0]
+    for j in range(seg):
+        faces.append((0, first[(j + 1) % seg], first[j]))
+    for lower, upper in zip(rings, rings[1:]):
+        for j in range(seg):
+            j1 = (j + 1) % seg
+            faces.append((lower[j], lower[j1], upper[j1], upper[j]))
+    last = rings[-1]
+    for j in range(seg):
+        faces.append((last[j], last[(j + 1) % seg], top))
+    o = shared.mesh_obj("chestnut_shell", verts, faces)
+    bm = bmesh.new()
+    bm.from_mesh(o.data)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(o.data)
+    bm.free()
+    o.data.materials.append(pbr("Chestnut lacquer", (0.25, 0.075, 0.026), 0.24, 0.0, 0.48))
+    for poly in o.data.polygons:
+        poly.use_smooth = True
+    return o
+
+
+def burr_spike(name, start, direction, length=0.18, radius=0.038):
     d = Vector(direction).normalized()
-    center = Vector(base) + d * (length * 0.5)
-    bpy.ops.mesh.primitive_cone_add(vertices=9, radius1=radius, radius2=0.002,
-                                    depth=length, location=center)
+    bpy.ops.mesh.primitive_cone_add(vertices=9, radius1=radius, radius2=0.002, depth=length,
+                                    location=Vector(start) + d * (length * 0.5))
     o = bpy.context.object
     o.name = name
-    o.rotation_euler = Vector((0, 0, 1)).rotation_difference(d).to_euler()
-    return mm.finish(o, mat, 20)
+    o.rotation_mode = "QUATERNION"
+    o.rotation_quaternion = Vector((0, 0, 1)).rotation_difference(d)
+    o.data.materials.append(pbr("Burr green", (0.12, 0.30, 0.075), 0.56))
+    for poly in o.data.polygons:
+        poly.use_smooth = True
+    return o
 
 
-def m_chestnut():
-    """The recurring meme mascot: a glossy chestnut, green burr crown, face and a looping hello."""
-    mats = prepare()
+def coin():
+    # Front of the coin faces the viewer (-Y); all surfaces are meshes before export.
+    shared.cyl("floating_coin", 0.145, 0.036, (0.59, -0.16, 0.58), "gold", rot=(math.radians(90), 0, 0), seg=36, bevel=0.004)
+    shared.torus("coin_rim", 0.119, 0.008, (0.59, -0.185, 0.58), "brass", rot=(math.radians(90), 0, 0), seg=36, mseg=8)
+    shared.sphere("coin_stamp", 0.028, (0.59, -0.191, 0.58), "ivory", seg=16, rings=8)
+
+
+def m_kashtan():
     rig = Rig()
 
-    main = rig.mark()
-    # An organically tapered conker, with a flattened lower tip and a warm shell.
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=64, ring_count=40, radius=1, location=(0, 0, 0))
-    nut = bpy.context.object
-    nut.name = "chestnut"
-    for v in nut.data.vertices:
-        x, y, z = v.co
-        taper = 1.0 - 0.12 * z
-        bottom = max(0.82, 1.0 + 0.17 * z)
-        v.co = (x * 0.52 * taper * bottom, y * 0.39 * taper * bottom, 0.72 + z * 0.68)
-    mm.finish(nut, mats["shell"], 80)
-    # Soft warm highlight along the upper shell.
-    mesh_sphere("shell_glint", (-0.16, -0.245, 1.08), (0.13, 0.025, 0.23), mats["shell_light"], 24, 16)
-    # The pale hilum mark is the unmistakable chestnut detail.
-    mesh_sphere("hilum", (0, -0.353, 0.37), (0.19, 0.045, 0.105), mats["cream"], 32, 20)
-    mesh_sphere("hilum_edge", (0, -0.373, 0.37), (0.13, 0.018, 0.052), mats["shell_light"], 28, 16)
-
-    # Friendly but slightly bewildered face, facing the PowerPoint viewer (-Y).
-    for side in (-1, 1):
-        x = side * 0.155
-        mesh_sphere("eye_white", (x, -0.344, 0.92), (0.086, 0.055, 0.105), mats["white"], 24, 16)
-        mesh_sphere("pupil", (x - side * 0.012, -0.392, 0.918), (0.041, 0.028, 0.057), mats["black"], 20, 12)
-        mesh_sphere("eye_glint", (x - side * 0.026, -0.416, 0.944), (0.014, 0.011, 0.018), mats["white"], 12, 8)
-        mesh_sphere("cheek", (side * 0.29, -0.314, 0.73), (0.053, 0.023, 0.035), mats["pink"], 18, 10)
-    tube("smile", [(-0.105, -0.365, 0.70), (-0.066, -0.387, 0.665), (0, -0.394, 0.653),
-                     (0.066, -0.387, 0.665), (0.105, -0.365, 0.70)], 0.012, mats["black"], 4, True)
-
-    # A little green spiky husk sits behind the crown, like the source photo.
-    mesh_sphere("green_burr", (0, 0.105, 1.31), (0.34, 0.20, 0.17), mats["burr"], 32, 18)
-    for i in range(11):
-        a = TAU * i / 11
-        d = (0.72 * math.cos(a), 0.42 * math.sin(a), 0.18 + 0.28 * math.cos(a * 2))
-        base = (0.24 * math.cos(a), 0.115 + 0.11 * math.sin(a), 1.30 + 0.045 * math.cos(a * 2))
-        cone_to("burr_spike", base, d, 0.042, 0.17 if i % 2 else 0.21, mats["burr"])
-
-    # Stubby legs and tiny shoes make the mascot feel like a character, not a walnut.
-    for side in (-1, 1):
-        x = side * 0.19
-        tube("leg", [(x, 0.0, 0.15), (x + side * 0.015, -0.01, 0.075)], 0.038, mats["leather"], 4, False)
-        mesh_sphere("shoe", (x + side * 0.055, -0.03, 0.055), (0.10, 0.075, 0.048), mats["leather"], 18, 10)
-    rig.take(main, "body", head=(0, 0, 0.70))
-
-    # Arms are separately skinned so Kash can do a little wave on each slide.
-    for side, name in ((-1, "armL"), (1, "armR")):
-        pivot = (side * 0.42, 0.015, 0.73)
-        arm = rig.mark()
-        tube("arm", [pivot, (side * 0.53, -0.01, 0.78), (side * 0.57, -0.03, 0.88)], 0.045, mats["shell_light"], 5, True)
-        mesh_sphere("mitten", (side * 0.58, -0.04, 0.89), (0.085, 0.075, 0.072), mats["cream"], 18, 12)
-        rig.take(arm, name, head=pivot, parent="body")
-
-    def anim(t):
-        w = math.sin(TAU * t)
-        return {
-            "body": {"loc": (0, 0, 0.032 * math.sin(TAU * t)), "rot": [((0, 1, 0), 2.5 * w)]},
-            "armL": {"rot": [((0, 1, 0), 14 + 22 * math.sin(TAU * t))]},
-            "armR": {"rot": [((0, 1, 0), -14 - 22 * math.sin(TAU * t))]},
-        }
-    export_rigged("chestnut", rig, anim, seconds=4.0)
-
-
-def m_smartphone():
-    """A slightly-too-convenient phone with an animated, irresistible pay button."""
-    mats = prepare()
-    rig = Rig()
+    # Main nut and face — one bone, with the animation pivot close to the base.
     body = rig.mark()
-    # rounded frame and deep screen, standing upright and facing the viewer
-    box("phone_frame", (0.78, 0.16, 1.48), (0, 0, 0.79), mats["teal"], 0.075, seg=4)
-    box("phone_screen", (0.67, 0.028, 1.30), (0, -0.092, 0.79), mats["screen"], 0.04, seg=4)
-    box("speaker", (0.17, 0.018, 0.022), (0, -0.114, 1.395), mats["metal"], 0.01, seg=3)
-    mesh_sphere("camera", (0.145, -0.118, 1.395), (0.023, 0.013, 0.023), mats["black"], 14, 8)
+    chestnut_shell()
+    oval("soft underside", (0.015, -0.244, 0.15), (0.245, 0.075, 0.115),
+         pbr("Chestnut hilum", (0.66, 0.42, 0.23), 0.55), 28, 14)
 
-    # Interface elements: a sale tile, a product card, a cart and a big pay pill.
-    box("deal_tile", (0.50, 0.018, 0.24), (0, -0.12, 1.18), mats["plum"], 0.035, seg=3)
-    mesh_sphere("deal_dot", (-0.19, -0.135, 1.18), (0.046, 0.015, 0.046), mats["gold"], 16, 10)
-    box("deal_text_1", (0.19, 0.015, 0.025), (0.045, -0.135, 1.21), mats["cream_paper"], 0.008, seg=2)
-    box("deal_text_2", (0.13, 0.015, 0.018), (0.015, -0.135, 1.16), mats["mint"], 0.006, seg=2)
-    box("product_card", (0.50, 0.018, 0.38), (0, -0.12, 0.84), mats["blue"], 0.03, seg=3)
-    mesh_sphere("product", (0, -0.15, 0.91), (0.12, 0.045, 0.12), mats["gold"], 20, 12)
-    box("product_line_1", (0.22, 0.015, 0.022), (0.10, -0.15, 0.77), mats["cream_paper"], 0.006, seg=2)
-    box("product_line_2", (0.16, 0.015, 0.018), (0.07, -0.15, 0.72), mats["mint"], 0.006, seg=2)
-    box("installment_chip", (0.42, 0.018, 0.10), (0, -0.12, 0.56), mats["gold"], 0.018, seg=3)
-    for i in range(3):
-        mesh_sphere("installment_dot", (-0.13 + i * 0.13, -0.137, 0.56), (0.022, 0.012, 0.022), mats["screen"], 12, 8)
-    box("pay_button", (0.47, 0.04, 0.15), (0, -0.14, 0.32), mats["coral"], 0.06, seg=5)
-    # a tiny outline shopping bag on the button
-    tube("cart_handle", [(-0.08, -0.17, 0.34), (-0.06, -0.17, 0.39), (0.06, -0.17, 0.39), (0.08, -0.17, 0.34)], 0.009, mats["cream_paper"], 3, False)
-    tube("cart_basket", [(-0.09, -0.17, 0.34), (-0.06, -0.17, 0.28), (0.06, -0.17, 0.28), (0.09, -0.17, 0.34)], 0.009, mats["cream_paper"], 3, False)
-    for x in (-0.045, 0.045):
-        mesh_sphere("cart_wheel", (x, -0.175, 0.25), (0.015, 0.012, 0.015), mats["cream_paper"], 10, 6)
-    rig.take(body, "body", head=(0, 0, 0.72))
+    # A green, prickly cupule peeks above and around the nut, as in the original photo.
+    oval("green burr cup", (0.0, 0.055, 0.68), (0.39, 0.27, 0.17),
+         pbr("Burr cup", (0.16, 0.34, 0.075), 0.56), 28, 16)
+    for k in range(11):
+        a = TAU * k / 11
+        start = (0.30 * math.cos(a), 0.17 * math.sin(a) + 0.02, 0.68 + 0.035 * math.cos(a * 2))
+        direction = (0.72 * math.cos(a), 0.72 * math.sin(a), 0.58 + 0.16 * math.sin(a * 3))
+        burr_spike(f"burr spine {k + 1}", start, direction, 0.155 if k % 3 else 0.19, 0.032)
 
-    badge = rig.mark()
-    mesh_sphere("notification", (0.30, -0.13, 1.27), (0.075, 0.035, 0.075), mats["coral"], 20, 12)
-    mesh_sphere("notification_dot", (0.30, -0.166, 1.27), (0.018, 0.012, 0.018), mats["cream_paper"], 12, 8)
-    rig.take(badge, "badge", head=(0.30, -0.13, 1.27), parent="body")
-
-    button = rig.mark()
-    # A small gold sparkle rises above the pay button.
-    mesh_sphere("sparkle", (0.22, -0.15, 0.36), (0.035, 0.025, 0.035), mats["gold"], 12, 8)
-    rig.take(button, "spark", head=(0.22, -0.15, 0.36), parent="body")
-
-    def anim(t):
-        return {
-            "body": {"rot": [((0, 0, 1), 2.0 * math.sin(TAU * t))]},
-            "badge": {"rot": [((0, 0, 1), 10 * math.sin(TAU * t))], "scale": 1.0 + 0.08 * math.sin(TAU * t)},
-            "spark": {"loc": (0, 0, 0.035 * math.sin(TAU * t + math.pi / 2)), "scale": 0.8 + 0.2 * (0.5 + 0.5 * math.sin(TAU * t))},
-        }
-    export_rigged("smartphone", rig, anim, seconds=4.0)
-
-
-def m_cart():
-    """An online-shopping basket on wheels: the products keep trying to jump in."""
-    mats = prepare()
-    rig = Rig()
-    base = rig.mark()
-    # trolley chassis
-    box("basket_floor", (1.12, 0.72, 0.12), (0, 0.02, 0.44), mats["metal"], 0.045, seg=3)
-    # top rim and side rails
-    for y in (-0.33, 0.37):
-        tube("rim", [(-0.58, y, 0.91), (0.58, y, 0.91)], 0.025, mats["metal"], 3, False)
-        for i in range(9):
-            x = -0.52 + i * 0.13
-            tube("basket_rail", [(x, y, 0.48), (x, y, 0.91)], 0.012, mats["metal"], 2, False)
-    for x in (-0.57, 0.57):
-        tube("rim_side", [(x, -0.33, 0.91), (x, 0.37, 0.91)], 0.025, mats["metal"], 3, False)
-        for i in range(5):
-            y = -0.28 + i * 0.16
-            tube("basket_cross", [(x, y, 0.48), (x, y, 0.91)], 0.012, mats["metal"], 2, False)
-    for z in (0.61, 0.75):
-        tube("basket_grid", [(-0.55, -0.33, z), (0.55, -0.33, z)], 0.012, mats["metal"], 2, False)
-        tube("basket_grid_back", [(-0.55, 0.37, z), (0.55, 0.37, z)], 0.012, mats["metal"], 2, False)
-        for x in (-0.57, 0.57):
-            tube("basket_grid_side", [(x, -0.33, z), (x, 0.37, z)], 0.012, mats["metal"], 2, False)
-    # handle and two axles
-    tube("handle_stem", [(-0.48, 0.34, 0.87), (-0.66, 0.50, 1.12), (-0.76, 0.50, 1.18)], 0.035, mats["metal"], 4, False)
-    tube("handle_grip", [(-0.78, 0.50, 1.18), (-0.48, 0.50, 1.18)], 0.045, mats["leather"], 4, False)
-    for x in (-0.42, 0.42):
-        for y in (-0.30, 0.30):
-            cyl("wheel_axle", 0.035, 0.08, (x, y, 0.21), mats["metal"], rot=(math.pi / 2, 0, 0), seg=16)
-            mesh_sphere("wheel", (x, y, 0.21), (0.10, 0.07, 0.10), mats["rubber"], 18, 10)
-    rig.take(base, "frame", head=(0, 0, 0.45))
-
-    # The cart contents are independently animated, but remain inside the basket silhouette.
-    for name, x, y, z, size, mat in (
-        ("snack", -0.26, -0.07, 0.78, (0.28, 0.25, 0.43), mats["plum"]),
-        ("box", 0.08, 0.04, 0.76, (0.34, 0.26, 0.38), mats["blue"]),
-    ):
-        group = rig.mark()
-        box(name + "_pack", size, (x, y, z), mat, 0.035, seg=3)
-        box(name + "_label", (size[0] * 0.50, 0.018, size[2] * 0.22), (x, y - size[1] / 2 - 0.01, z), mats["cream_paper"], 0.012, seg=2)
-        rig.take(group, name, head=(x, y, z), parent="frame")
-    can = rig.mark()
-    cyl("can", 0.14, 0.43, (0.36, -0.03, 0.77), mats["mint"], seg=40, bevel=0.018)
-    cyl("can_top", 0.11, 0.018, (0.36, -0.03, 0.992), mats["metal"], seg=32)
-    box("can_logo", (0.15, 0.014, 0.08), (0.36, -0.174, 0.78), mats["coral"], 0.025, seg=3)
-    rig.take(can, "can", head=(0.36, -0.03, 0.77), parent="frame")
-
-    fruit = rig.mark()
-    mesh_sphere("fruit", (-0.01, -0.20, 0.94), (0.15, 0.15, 0.16), mats["gold"], 24, 16)
-    mesh_sphere("fruit_leaf", (-0.01, -0.20, 1.10), (0.045, 0.025, 0.10), mats["green"], 14, 8)
-    rig.take(fruit, "fruit", head=(-0.01, -0.20, 0.94), parent="frame")
-
-    def anim(t):
-        w = math.sin(TAU * t)
-        return {
-            "frame": {"rot": [((0, 0, 1), 1.5 * w)]},
-            "snack": {"loc": (0, 0, 0.025 * w), "rot": [((0, 1, 0), 3 * w)]},
-            "box": {"loc": (0, 0, -0.02 * w), "rot": [((1, 0, 0), -2 * w)]},
-            "can": {"rot": [((0, 0, 1), 2 * w)]},
-            "fruit": {"loc": (0, 0, 0.045 * math.sin(TAU * t + 0.4))},
-        }
-    export_rigged("cart", rig, anim, seconds=4.0)
-
-
-def m_wallet():
-    """A wallet that opens a little; the card and coin gently bounce back into view."""
-    mats = prepare()
-    rig = Rig()
-    body = rig.mark()
-    box("wallet_base", (1.18, 0.27, 0.78), (0, 0.04, 0.58), mats["leather"], 0.09, seg=4)
-    box("wallet_front", (1.08, 0.055, 0.69), (0, -0.125, 0.55), mats["leather_light"], 0.075, seg=4)
-    # Stitch lines frame the front cover.
+    # Friendly meme-face: big eyes, espresso pupils, tiny highlights, raised brows and a grin.
+    eye_white = pbr("Warm eye white", (0.98, 0.91, 0.76), 0.22, 0.0, 0.15)
+    pupil = pbr("Espresso pupils", (0.028, 0.014, 0.010), 0.16, 0.0, 0.3)
+    glint = pbr("Eye sparkle", (1.0, 0.97, 0.84), 0.12)
+    cheek = pbr("Cheek tint", (0.70, 0.16, 0.10), 0.50)
+    smile = pbr("Smile", (0.12, 0.026, 0.012), 0.48)
     for side in (-1, 1):
-        tube("stitch_side", [(side * 0.47, -0.162, 0.28), (side * 0.47, -0.162, 0.83)], 0.009, mats["cream"], 2, False)
-    tube("stitch_bottom", [(-0.46, -0.162, 0.26), (0.46, -0.162, 0.26)], 0.009, mats["cream"], 2, False)
-    box("clasp", (0.27, 0.08, 0.12), (0, -0.18, 0.52), mats["gold"], 0.035, seg=3)
-    box("clasp_inlay", (0.13, 0.02, 0.035), (0, -0.228, 0.52), mats["leather"], 0.012, seg=2)
-    rig.take(body, "body", head=(0, 0, 0.58))
+        x = side * 0.135
+        oval("eye", (x, -0.286, 0.47), (0.067, 0.052, 0.088), eye_white, 22, 12)
+        oval("pupil", (x + 0.012, -0.333, 0.462), (0.027, 0.021, 0.041), pupil, 18, 10)
+        oval("eye glint", (x + 0.004, -0.352, 0.483), (0.010, 0.008, 0.014), glint, 12, 6)
+        oval("cheek", (side * 0.254, -0.258, 0.365), (0.052, 0.023, 0.028), cheek, 16, 8)
+        shared.tube("eyebrow", [(x - 0.052, -0.302, 0.572), (x, -0.322, 0.588), (x + 0.052, -0.302, 0.572)],
+                    0.014, "walnut", res=3, smooth_curve=True)
+    grin_points = [(-0.104, -0.300, 0.346), (-0.058, -0.327, 0.322), (0.0, -0.334, 0.315),
+                   (0.058, -0.327, 0.322), (0.104, -0.300, 0.346)]
+    shared.tube("smile", grin_points, 0.012, smile, res=3, smooth_curve=True)
+    rig.take(body, "body", head=(0.0, 0.0, 0.04))
 
-    card = rig.mark()
-    # teal card peeking from the top slot, chip toward the viewer
-    box("bank_card", (0.50, 0.045, 0.32), (0.13, -0.065, 1.00), mats["teal"], 0.045, seg=4)
-    box("card_chip", (0.11, 0.018, 0.09), (0.13, -0.093, 0.99), mats["gold"], 0.012, seg=2)
-    tube("card_mark", [(0.25, -0.095, 0.91), (0.39, -0.095, 0.91)], 0.009, mats["cream_paper"], 2, False)
-    rig.take(card, "card", head=(0.13, -0.065, 0.91), parent="body")
+    # Two expressive arms on separate bones. One waves; the other gestures to the coin.
+    left = rig.mark()
+    shared.tube("left arm", [(-0.335, -0.03, 0.43), (-0.47, -0.10, 0.40), (-0.54, -0.16, 0.49)],
+                0.036, "walnut", res=4, smooth_curve=True)
+    oval("left mitten", (-0.548, -0.17, 0.505), (0.072, 0.060, 0.078),
+         pbr("Mittens", (0.79, 0.56, 0.32), 0.42), 18, 10)
+    rig.take(left, "arm_left", head=(-0.335, -0.03, 0.43))
 
-    coin = rig.mark()
-    cyl("coin", 0.19, 0.045, (-0.38, -0.23, 0.34), mats["gold"], rot=(math.pi / 2, 0, 0), seg=40, bevel=0.012)
-    torus("coin_rim", 0.15, 0.009, (-0.38, -0.258, 0.34), mats["cream"], rot=(math.pi / 2, 0, 0), seg=36, mseg=8)
-    rig.take(coin, "coin", head=(-0.38, -0.23, 0.34), parent="body")
+    right = rig.mark()
+    shared.tube("right arm", [(0.335, -0.03, 0.43), (0.46, -0.10, 0.49), (0.52, -0.15, 0.60)],
+                0.036, "walnut", res=4, smooth_curve=True)
+    oval("right mitten", (0.532, -0.165, 0.612), (0.074, 0.060, 0.079),
+         pbr("Mittens", (0.79, 0.56, 0.32), 0.42), 18, 10)
+    rig.take(right, "arm_right", head=(0.335, -0.03, 0.43))
+
+    # Little grounded legs and shoes (root bone, so the mascot keeps its footing while bobbing).
+    shoe = pbr("Shoes", (0.11, 0.045, 0.025), 0.33, 0.0, 0.12)
+    for side in (-1, 1):
+        x = side * 0.145
+        shared.tube("leg", [(x, -0.035, 0.08), (x, -0.085, -0.095)], 0.028, "walnut", res=3, smooth_curve=False)
+        oval("shoe", (x + side * 0.035, -0.12, -0.115), (0.12, 0.13, 0.055), shoe, 18, 10)
+
+    # A tiny coin: the joke is that Kashtan is auditing the receipt, not endorsing spending.
+    money = rig.mark()
+    coin()
+    rig.take(money, "coin", head=(0.59, -0.16, 0.58))
+
+    rig.shift(dz=-0.12)
 
     def anim(t):
-        w = math.sin(TAU * t)
+        bob = 0.022 * (0.5 - 0.5 * math.cos(TAU * t))
         return {
-            "body": {"rot": [((0, 0, 1), 1.5 * w)]},
-            "card": {"loc": (0, 0, 0.04 * (0.5 + 0.5 * w)), "rot": [((0, 1, 0), 2.5 * w)]},
-            "coin": {"rot": [((0, 0, 1), 7 * w)], "loc": (0, 0, 0.018 * (0.5 + 0.5 * w))},
+            "body": {
+                "loc": (0.0, 0.0, bob),
+                "rot": [((0, 1, 0), 3.0 * math.sin(TAU * t)), ((1, 0, 0), 1.6 * math.sin(TAU * t + 0.6))],
+            },
+            "arm_left": {"rot": [((0, 1, 0), -24.0 + 18.0 * math.sin(TAU * t + 0.2))]},
+            "arm_right": {"rot": [((0, 1, 0), 28.0 + 13.0 * math.sin(TAU * t - 0.2))]},
+            "coin": {
+                "loc": (0.0, 0.0, 0.032 * (0.5 + 0.5 * math.sin(TAU * t))),
+                "rot": [((0, 1, 0), 16.0 * math.sin(TAU * t))],
+            },
         }
-    export_rigged("wallet", rig, anim, seconds=4.0)
+
+    return rig, anim, 4.8
 
 
-MODELS = {"chestnut": m_chestnut, "smartphone": m_smartphone, "cart": m_cart, "wallet": m_wallet}
+MODELS = {"kashtan": m_kashtan}
+
 if __name__ == "__main__":
-    keys = sys.argv[1:] or list(MODELS)
-    for key in keys:
-        if key not in MODELS:
-            raise SystemExit(f"unknown model {key!r}; choose from {', '.join(MODELS)}")
-        MODELS[key]()
+    want = [arg for arg in sys.argv[1:] if arg in MODELS] or list(MODELS)
+    for key in want:
+        shared.reset()
+        _mats.clear()
+        result = MODELS[key]()
+        export_rigged(key, *result)

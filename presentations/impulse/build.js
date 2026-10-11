@@ -1,485 +1,477 @@
-// Build the 3D, meme-aware research presentation on impulse spending.
-// Output: ../../exports/impulse-spending-3d.pptx + speaker script + sources.
-// Each slide contains a native PowerPoint 3D model (.glb), a looping skinned animation,
-// and Morph transitions. The original chestnut photo and selected memes are retained.
+// Rebuilds the user's original ekonomika123.pptx as a ten-slide, editable deck:
+// one real animated PowerPoint 3D chestnut mascot per slide, Morph between slides,
+// original meme/photo assets retained, speaker notes, source sheet and PNG previews.
 const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
 const { execSync } = require("child_process");
-const SCH = path.join(__dirname, "..", "schumpeter");
+
+const HERE = __dirname;
+const ROOT = path.resolve(HERE, "../..");
+const SCH = path.join(HERE, "..", "schumpeter");
 const req = require("module").createRequire(path.join(SCH, "package.json"));
 const { Slide, toPptx, toHtml } = require(path.join(SCH, "lib"));
 const { injectModels, injectTiming, dedupeMedia } = require(path.join(SCH, "pptx3d"));
 
-const A = (f) => path.join(__dirname, "assets", f);
-const OUT = path.join(__dirname, "../../exports");
-const GOLD = "E3B663", GOLD2 = "F3DDAE", WHITE = "F5EFE6", MUTED = "BBAEA6";
-const CORAL = "E8866A", MINT = "A4D9C6", CARD = "21131A", DARK = "0D0709", FACT = "251714";
-const L = 0.76, R = 12.58, CW = R - L, SW = 13.333, N = 9;
+const A = (name) => path.join(HERE, "assets", name);
+const BG = "F8F5ED", INK = "202A35", MUTED = "64707A", RED = "E64D42", RED_D = "B93532",
+  ORANGE = "D28B43", CARD = "FFFDF8", BLUE = "7399AD", GREEN = "3D8560", PALE = "F3E8D9";
+const L = 0.78, R = 12.55, SW = 13.333, SH = 7.5, N = 10;
 const slides = [];
-const slideTitles = [
-  "Каштан в корзине",
-  "Почему это важно: рассрочка и BNPL",
-  "Как срабатывает импульсная покупка",
-  "Гипотезы исследования",
-  "Цель и задачи проекта",
-  "Метод и целевая аудитория",
-  "Памятка: пауза до оплаты",
-  "Ограничения и честный вывод",
-  "Итог и источники",
+const REF = {
+  1: "Rook, D. W. (1987). The Buying Impulse. Journal of Consumer Research, 14(2), 189–199. https://doi.org/10.1086/209105",
+  2: "Verplanken, B., & Herabadi, A. (2001). Individual differences in impulse buying tendency: Feeling and no thinking. European Journal of Personality, 15(S1), S71–S83. https://doi.org/10.1002/per.423",
+  3: "Dholakia, U. M. (2000). Temptation and resistance: An integrated model of consumption impulse formation and enactment. Psychology & Marketing, 17(11), 955–982. https://doi.org/10.1002/1520-6793(200011)17:11<955::AID-MAR3>3.0.CO;2-J",
+  4: "Soman, D. (2001). Effects of payment mechanism on spending behavior: The role of rehearsal and immediacy of payments. Journal of Consumer Research, 27(4), 460–474. https://doi.org/10.1086/319621",
+  5: "Aggarwal, P., Jun, S. Y., & Huh, J. H. (2011). Scarcity messages: A consumer competition perspective. Journal of Advertising, 40(3), 19–30. https://doi.org/10.2753/JOA0091-3367400302",
+  6: "Cialdini, R. B. (2009). Influence: Science and Practice (5th ed.). Pearson.",
+  7: "Przybylski, A. K., Murayama, K., DeHaan, C. R., & Gladwell, V. (2013). Motivational, emotional, and behavioral correlates of fear of missing out. Computers in Human Behavior, 29(4), 1841–1848. https://doi.org/10.1016/j.chb.2013.02.014",
+  8: "Tversky, A., & Kahneman, D. (1981). The framing of decisions and the psychology of choice. Science, 211(4481), 453–458. https://doi.org/10.1126/science.7455683",
+};
+const TITLES = [
+  "Покупка на автопилоте",
+  "Между «посмотреть» и оплатой — пара кликов",
+  "Не всякая незапланированная покупка импульсивна",
+  "Петля: триггер → импульс → чек",
+  "Витрина нажимает на разные кнопки",
+  "Кого и о чём мы спрашиваем?",
+  "Гипотезы: проверяем связи, не виноватых",
+  "План: от анкеты до памятки",
+  "Пауза вместо чувства вины",
+  "Каштан проверил чек. Ваш ход.",
 ];
-const run = (text, options = {}) => ({ text, options });
-const br = (text, options = {}) => ({ text, options: { ...options, breakLine: true } });
+const KICKERS = ["СТАРТ", "КОНТЕКСТ", "ОПРЕДЕЛЕНИЕ", "МЕХАНИЗМ", "ТРИГГЕРЫ", "ВОПРОС", "ГИПОТЕЗЫ", "МЕТОД", "ПАМЯТКА", "ИТОГ"];
 
-function chrome(s, idx, kicker) {
-  s.bg = DARK;
-  s.img(A("stage-bg.jpg"), { x: 0, y: 0, w: SW, h: 7.5, name: "!!background" });
-  const trackY = 0.43, gx = L + CW * ((idx - 1) / (N - 1));
-  s.line({ x1: L, y1: trackY, x2: R, y2: trackY, color: "FFFFFF", lineT: 87, width: 0.75, name: "!!track" });
-  if (idx > 1) s.rect({ x: L, y: trackY - 0.014, w: gx - L, h: 0.028, fill: GOLD, name: "!!progress" });
-  if (kicker) {
-    s.rect({ x: L, y: 0.77, w: 0.32, h: 0.035, fill: CORAL, name: "!!kickerbar" });
-    s.text(kicker, { x: L + 0.46, y: 0.64, w: 9.8, h: 0.28, size: 10.5, bold: true,
-      color: GOLD, charSpacing: 2.5, name: "!!kicker" });
-  }
-  s.line({ x1: L, y1: 7.0, x2: R, y2: 7.0, color: "FFFFFF", lineT: 88, width: 0.7, name: "!!footline" });
-  s.text("ПОВЕДЕНЧЕСКАЯ ЭКОНОМИКА  ·  ПРОЕКТ-ИССЛЕДОВАНИЕ", {
-    x: L, y: 7.1, w: 7.6, h: 0.24, size: 8.8, color: MUTED, charSpacing: 1.5, name: "!!footer" });
+function chrome(s, idx) {
+  s.bg = BG;
+  s.img(A("stage-bg.jpg"), { x: 0, y: 0, w: SW, h: SH, name: "!!paper-bg" });
+  s.rect({ x: L, y: 0.34, w: 0.14, h: 0.14, shape: "ellipse", fill: RED, name: "!!brand-dot" });
+  s.text("ПСИХОЛОГИЯ ИМПУЛЬСИВНЫХ ТРАТ", {
+    x: L + 0.28, y: 0.26, w: 5.8, h: 0.25, size: 9, bold: true, color: RED_D,
+    charSpacing: 1.8, name: "!!brand",
+  });
+  s.text(KICKERS[idx - 1], {
+    x: 9.2, y: 0.26, w: 2.3, h: 0.25, size: 9, bold: true, color: MUTED,
+    align: "right", charSpacing: 1.4, name: "!!section",
+  });
   s.text(`${String(idx).padStart(2, "0")} / ${N}`, {
-    x: R - 1.0, y: 7.1, w: 1.0, h: 0.24, size: 8.8, color: MUTED,
-    align: "right", charSpacing: 2, name: "!!pagenum" });
+    x: 11.65, y: 0.26, w: 0.9, h: 0.25, size: 9, bold: true, color: RED_D,
+    align: "right", charSpacing: 1.2, name: "!!page",
+  });
+  const progress = (R - L) * idx / N;
+  s.rect({ x: L, y: 0.69, w: R - L, h: 0.025, fill: "D6D4CD", name: "!!track" });
+  s.rect({ x: L, y: 0.69, w: progress, h: 0.025, fill: RED, name: "!!progress" });
+  s.line({ x1: L, y1: 6.97, x2: R, y2: 6.97, color: INK, lineT: 85, width: 0.65, name: "!!footer-line" });
+  s.text("УЧЕБНЫЙ ПРОЕКТ  ·  ПЛАН И ГИПОТЕЗЫ, НЕ РЕЗУЛЬТАТЫ ОПРОСА", {
+    x: L, y: 7.07, w: 8.2, h: 0.22, size: 8, color: MUTED, charSpacing: 0.6, name: "!!footer",
+  });
+  s.text("2026", { x: R - 0.55, y: 7.07, w: 0.55, h: 0.22, size: 8, color: MUTED, align: "right", name: "!!year" });
 }
 
 function title(s, text, o = {}) {
-  s.text(text, { x: o.x ?? L, y: o.y ?? 1.02, w: o.w ?? 7.1, h: o.h ?? 1.0,
-    font: "head", size: o.size ?? 32, color: o.color ?? WHITE, bold: o.bold ?? false,
-    lineSpacingMultiple: 0.97, name: "!!title", valign: "top" });
+  s.text(text, {
+    x: o.x ?? L, y: o.y ?? 1.02, w: o.w ?? 7.45, h: o.h ?? 1.0,
+    font: "body", size: o.size ?? 31, bold: true, color: INK,
+    lineSpacingMultiple: 0.94, valign: "top", name: "!!title",
+  });
+  const y = (o.y ?? 1.02) + (o.underlineY ?? 0.94);
+  const w = Math.min(o.underlineW ?? 1.45, o.w ?? 7.45);
+  s.line({ x1: o.x ?? L, y1: y, x2: (o.x ?? L) + w, y2: y + 0.015, color: RED, width: 2.3, name: "!!title-underline" });
+  s.line({ x1: (o.x ?? L) + 0.06, y1: y + 0.045, x2: (o.x ?? L) + w * 0.83, y2: y + 0.035, color: RED, lineT: 42, width: 0.9 });
+}
+
+function text(s, value, x, y, w, h, o = {}) {
+  s.text(value, {
+    x, y, w, h, font: o.font || "body", size: o.size ?? 13, color: o.color || INK,
+    bold: o.bold ?? false, italic: o.italic ?? false, align: o.align || "left",
+    valign: o.valign || "top", lineSpacingMultiple: o.lineSpacingMultiple ?? 1.05,
+    charSpacing: o.charSpacing, ag: o.ag, name: o.name,
+  });
+}
+
+function label(s, value, x, y, w, o = {}) {
+  text(s, value.toUpperCase(), x, y, w, o.h || 0.22, {
+    size: o.size || 8.5, bold: true, color: o.color || RED_D,
+    charSpacing: o.charSpacing ?? 1.25, ag: o.ag,
+  });
 }
 
 function card(s, x, y, w, h, o = {}) {
-  s.rect({ x, y, w, h, fill: o.fill || CARD, fillT: o.fillT ?? 14,
-    line: o.line || GOLD, lineT: o.lineT ?? 72, lineW: o.lineW || 0.8,
-    radius: o.radius ?? 0.10, shadow: o.shadow ?? false, ag: o.ag });
-}
-
-function label(s, text, x, y, w, color = GOLD, o = {}) {
-  s.text(text, { x, y, w, h: o.h || 0.24, size: o.size || 9.5, bold: true,
-    color, charSpacing: o.charSpacing ?? 1.8, align: o.align || "left", valign: o.valign || "top", ag: o.ag });
-}
-
-function fact(s, x, y, w, h, text, o = {}) {
-  card(s, x, y, w, h, { fill: FACT, fillT: 6, line: o.line || CORAL, lineT: 38, lineW: 1, ag: o.ag });
-  s.rect({ x: x + 0.16, y: y + 0.17, w: 0.045, h: h - 0.34, fill: o.line || CORAL, ag: o.ag });
-  if (o.tag) label(s, o.tag, x + 0.32, y + 0.13, w - 0.54, GOLD, { size: 8.5, ag: o.ag });
-  s.text(text, { x: x + 0.32, y: y + (o.tag ? 0.40 : 0.17), w: w - 0.55,
-    h: h - (o.tag ? 0.48 : 0.28), font: o.font || "head", size: o.size || 14,
-    color: WHITE, italic: o.italic ?? false, valign: "middle", lineSpacingMultiple: 1.02, ag: o.ag });
-}
-
-function stage(s, key, o) {
-  const { x, y, s: sz } = o;
-  const rot = o.rot || [10, -20, 0];
-  const cx = x + sz / 2, cy = y + sz / 2 + (o.dy || 0);
-  const glow = sz * (o.glow || 1.42);
-  s.img(A("glow.png"), { x: cx - glow / 2, y: cy - glow / 2, w: glow, h: glow, name: "!!glow" });
-  const r1 = sz * 0.48, r2 = sz * 0.59;
-  s.rect({ x: cx - r1, y: cy - r1, w: 2 * r1, h: 2 * r1, shape: "ellipse",
-    line: GOLD, lineT: 84, lineW: 0.75, name: "!!ring1" });
-  s.rect({ x: cx - r2, y: cy - r2, w: 2 * r2, h: 2 * r2, shape: "ellipse",
-    line: GOLD, lineT: 90, lineW: 0.65, dash: "dash", name: "!!ring2" });
-  const shw = sz * (o.shw || 0.72), shy = y + sz * (o.shy || 0.83);
-  s.img(A("shadow.png"), { x: cx - shw / 2, y: shy - shw / 8, w: shw, h: shw / 4, name: "!!shadow" });
-  s.model(key, { x, y, s: sz, rot, name: o.name || `!!m-${key}`, px: o.px || 760, anim: o.anim });
-  s.hero = { key, x, y, s: sz, rot };
-  if (o.caption) {
-    const cw = o.cw || 4.0;
-    const capX = o.capX ?? cx - cw / 2;
-    const capY = o.capY ?? y + sz * 0.93;
-    s.text([br(o.caption[0], { bold: true, color: GOLD, charSpacing: 2 }),
-      run(o.caption[1], { color: MUTED })], {
-      x: capX, y: capY, w: cw, h: o.capH || 0.48, size: 8.8,
-      align: o.capAlign || "center", lineSpacingMultiple: 1.05, ag: o.ag ?? 8 });
+  s.rect({
+    x, y, w, h, fill: o.fill || CARD, fillT: o.fillT ?? 3,
+    line: o.line || "D9D3C8", lineT: o.lineT ?? 10, lineW: o.lineW ?? 0.75,
+    radius: o.radius ?? 0.08, shadow: o.shadow ?? true, ag: o.ag,
+  });
+  if (o.tape) {
+    s.rect({ x: x + w * 0.38, y: y - 0.055, w: w * 0.23, h: 0.14, fill: o.tape, fillT: 12, rotate: -2 });
   }
 }
 
-const MEME_RATIO = {
-  "chestnuts-original.jpeg": 600 / 401,
-  "meme-100-rub.jpeg": 1,
-  "meme-serotonin.jpeg": 735 / 524,
-  "meme-budget-jars.jpeg": 736 / 669,
-};
-function memeCard(s, file, x, y, w, h, caption, o = {}) {
-  const pad = o.pad ?? 0.11, foot = o.foot ?? 0.36;
-  card(s, x, y, w, h, { fill: "F5EFE6", fillT: 0, line: o.line || "F5EFE6", lineT: 0, radius: 0.06, shadow: true, ag: o.ag });
-  const maxW = w - pad * 2, maxH = h - foot - pad * 1.5, ratio = MEME_RATIO[file];
-  let iw = maxW, ih = iw / ratio;
-  if (ih > maxH) { ih = maxH; iw = ih * ratio; }
-  const ix = x + (w - iw) / 2, iy = y + pad + (maxH - ih) / 2;
-  s.img(A(file), { x: ix, y: iy, w: iw, h: ih, name: o.name });
-  if (caption) s.text(caption, { x: x + pad, y: y + h - foot + 0.02, w: w - pad * 2,
-    h: foot - 0.05, size: o.size || 8.4, bold: true, color: DARK,
-    align: o.align || "center", valign: "middle", lineSpacingMultiple: 1.0, ag: o.ag });
-}
-
-function stepRow(s, n, head, body, x, y, w, o = {}) {
-  const h = o.h || 0.84;
-  s.text(n, { x, y: y + 0.02, w: 0.52, h: 0.35, font: "head", size: 19,
-    color: o.accent || CORAL, bold: true, ag: o.ag });
-  s.text(head, { x: x + 0.66, y, w: w - 0.72, h: 0.29, size: o.headSize || 13.4,
-    color: WHITE, bold: true, ag: o.ag });
-  s.text(body, { x: x + 0.66, y: y + 0.32, w: w - 0.72, h: h - 0.34,
-    size: o.bodySize || 10.8, color: MUTED, lineSpacingMultiple: 1.0, ag: o.ag });
-}
-
-function chip(s, text, x, y, w, o = {}) {
-  s.rect({ x, y, w, h: o.h || 0.34, fill: o.fill || "2E201C", fillT: o.fillT ?? 4,
-    line: o.line || CORAL, lineT: o.lineT ?? 42, lineW: 0.8, radius: 0.17, ag: o.ag });
-  s.text(text, { x: x + 0.12, y: y + 0.03, w: w - 0.24, h: (o.h || 0.34) - 0.06,
-    size: o.size || 8.8, bold: true, color: o.color || GOLD2,
-    align: "center", valign: "middle", charSpacing: o.charSpacing ?? 0.7, ag: o.ag });
-}
-
-// -----------------------------------------------------------------------------
-// 1. TITLE — the source chestnut is retained, and the new 3D Kash mascot opens the talk.
-{
-  const s = new Slide({ notes: `В оригинале у проекта была простая, узнаваемая интонация: серьёзная тема, рассказанная через мемы и самоиронию. Я её сохраняю, но собираю в одну историю — каштан теперь наш постоянный ревизор корзины. На экране рядом с его новой 3D-версией осталась и исходная фотография каштанов из оригинальной презентации.\nТема проекта — психология импульсивных трат: почему мы покупаем незапланированное и какие цифровые триггеры могут ускорять решение. Это не рассказ о том, что люди «плохо обращаются с деньгами», а план небольшого исследования поведения студентов 18–25 лет. Важно: результаты ещё не собраны, поэтому дальше будут гипотезы и методика, а не выдуманные цифры.` });
-  chrome(s, 1, "ПСИХОЛОГИЯ ИМПУЛЬСИВНЫХ ТРАТ  ·  МЕМЫ СОХРАНЕНЫ");
-  title(s, "Каштан\nв корзине.", { x: L, y: 1.28, w: 5.8, h: 1.65, size: 50 });
-  s.text("ПОЧЕМУ МЫ ПОКУПАЕМ НЕНУЖНОЕ — И КАК ВЕРНУТЬ СЕБЕ ПАУЗУ", {
-    x: L + 0.03, y: 3.17, w: 5.7, h: 0.72, font: "head", size: 18,
-    color: GOLD2, italic: true, lineSpacingMultiple: 1.03 });
-  chip(s, "ПРОЕКТ-ИССЛЕДОВАНИЕ  ·  СТУДЕНТЫ 18–25  ·  ПЛАН N ≥ 50", L + 0.03, 4.07, 5.35, { line: GOLD, size: 8.6 });
-  memeCard(s, "chestnuts-original.jpeg", L, 4.75, 2.80, 2.03,
-    "ОРИГИНАЛЬНЫЙ КАШТАН — НА МЕСТЕ ✓", { size: 8.2 });
-  s.text("Каштан-ревизор:\n«Ты это хотел — или\nтебе показали скидку?»", {
-    x: 3.82, y: 5.10, w: 2.86, h: 1.22, font: "head", size: 16,
-    color: WHITE, italic: true, lineSpacingMultiple: 1.1 });
-  stage(s, "chestnut", { x: 6.80, y: 0.82, s: 5.70, rot: [8, -18, 0], px: 920,
-    shy: 0.83, shw: 0.72, caption: ["КАШТАН-РЕВИЗОР", "Машет, моргает и не осуждает"], capX: 7.42, capY: 6.47, cw: 4.45 });
-  slides.push(s);
-}
-
-// 2. CONTEXT — keep the original BNPL point, cite it and label the estimate correctly.
-{
-  const s = new Slide({ notes: `Почему эта тема актуальна именно сейчас? В оригинальном проекте был приведён рост BNPL — сервисов оплаты частями. По опубликованной в феврале 2026 года оценке, совокупные транзакции крупнейших таких сервисов в России за 2025 год составили около 940 миллиардов рублей, примерно в два с половиной раза больше оценки за 2024 год. Это именно оценка оборота ряда сервисов, не общий долг домохозяйств и не официальная статистика всех покупок.\nА с первого апреля 2026 года действует федеральный закон номер 283-ФЗ о деятельности сервисов рассрочки. Для нашей темы это контекст: способы оплаты и интерфейс меняются, а решение часто принимается прямо в приложении. Мем «С вас списано 100 рублей» здесь не доказательство, а узнаваемая шутка про мелкие, но повторяющиеся траты.` });
-  chrome(s, 2, "01  /  КОНТЕКСТ  ·  ОПЛАТА ЧАСТЯМИ");
-  title(s, "Рассрочка стала\nобычным кликом", { w: 6.7, h: 1.22, size: 33 });
-  card(s, L, 2.50, 6.62, 1.36, { line: GOLD, lineT: 50, fill: "271719", fillT: 5 });
-  s.text("940 млрд ₽", { x: L + 0.24, y: 2.66, w: 2.95, h: 0.58,
-    font: "head", size: 35, color: GOLD2, bold: true });
-  s.text("Оценка транзакций крупнейших BNPL-сервисов в России за 2025 год: ≈2,5× к 2024-му. [1]", {
-    x: L + 3.10, y: 2.70, w: 3.24, h: 0.86, size: 11.5, color: WHITE, lineSpacingMultiple: 1.08 });
-  fact(s, L, 4.03, 6.62, 0.84,
-    "С 1 апреля 2026 года действует ФЗ № 283-ФЗ о сервисах рассрочки. [2]", {
-      tag: "НОВЫЙ КОНТЕКСТ", size: 12.6, line: CORAL });
-  memeCard(s, "meme-100-rub.jpeg", L, 5.10, 2.43, 1.73,
-    "«С ВАС СПИСАНО 100 ₽» — И ТАК КАЖДЫЙ ДЕНЬ", { size: 7.8, foot: 0.32 });
-  s.text("Небольшой платёж выглядит легче\nполной цены. Исследуем, когда\nэто влияет на выбор — без ярлыка\n«у людей нет финансовой грамотности». ", {
-    x: 3.48, y: 5.23, w: 3.80, h: 1.30, size: 12.4,
-    color: MUTED, lineSpacingMultiple: 1.12 });
-  stage(s, "smartphone", { x: 7.72, y: 1.15, s: 4.55, rot: [8, -16, 0], px: 780,
-    shy: 0.85, shw: 0.70, caption: ["ЭКРАН ПОКУПКИ", "Уведомление мигает — кнопка ждёт"], capX: 8.0, capY: 6.03, cw: 4.0 });
-  s.text("Сноска: оценка «Долями» / публикация о рынке BNPL; это не сумма просрочки. [1]", {
-    x: L, y: 6.86, w: 7.0, h: 0.16, size: 7.6, color: MUTED });
-  slides.push(s);
-}
-
-// 3. MECHANISM — no pop-neuroscience, just a readable behavioral sequence.
-{
-  const s = new Slide({ notes: `Импульсивная покупка — не синоним любой спонтанной покупки и не диагноз. В исследованиях её связывают с незапланированным решением, сильным желанием купить сразу и меньшим вниманием к последствиям. На решение могут влиять и особенности человека, и контекст: что показал экран, есть ли ощущение срочности, насколько легко оплатить.\nВ этой презентации мы показываем короткую модель для проверки: стимул — например, скидка или рекомендация; чувство «надо сейчас»; упрощённая оплата; затем уже оценка покупки. Это схема гипотезы, не утверждение, что каждый пользователь проходит один и тот же путь. Мем про «инвестиции в серотонин» оставляем как мем, но не сводим психологию к одному нейромедиатору.` });
-  chrome(s, 3, "02  /  МЕХАНИЗМ  ·  ОТ СТИМУЛА ДО ЧЕКА");
-  title(s, "Импульс — короткий\nмаршрут к клику", { w: 6.9, h: 1.2, size: 33 });
-  stepRow(s, "01", "СТИМУЛ", "Пуш, таймер «успей», блогер, знакомая вещь в ленте.", L + 0.04, 2.43, 4.96, { h: 0.82 });
-  stepRow(s, "02", "СРОЧНОСТЬ", "«Потом будет поздно» или «у всех уже есть».", L + 0.04, 3.35, 4.96, { h: 0.82 });
-  stepRow(s, "03", "КЛИК", "Сохранённая карта и оплата частями сокращают паузу.", L + 0.04, 4.27, 4.96, { h: 0.82 });
-  stepRow(s, "04", "ПОСЛЕ", "Радость, «норм» или сожаление — проверим в анкете.", L + 0.04, 5.19, 4.96, { h: 0.82 });
-  memeCard(s, "meme-serotonin.jpeg", 5.84, 2.45, 1.84, 2.42,
-    "МЕМ ИЗ ОРИГИНАЛА: «ВЛОЖИЛАСЬ В СЕРОТОНИН»", { size: 6.8, foot: 0.34, pad: 0.08 });
-  chip(s, "НЕ «СЛАБАЯ ВОЛЯ»  ·  ЧЕЛОВЕК + СИТУАЦИЯ + ИНТЕРФЕЙС", L + 0.04, 6.18, 6.75, { line: CORAL, size: 8.4 });
-  stage(s, "cart", { x: 8.18, y: 1.24, s: 4.20, rot: [10, -22, 0], px: 760,
-    shy: 0.85, shw: 0.70, caption: ["КОРЗИНА", "Товары сами подпрыгивают к покупке"], capX: 8.28, capY: 5.90, cw: 4.0 });
-  s.text("Определения: Rook & Fisher (1995); Verplanken & Herabadi (2001). FOMO: Przybylski et al. (2013). [3][4][7]", {
-    x: L, y: 6.79, w: 7.35, h: 0.17, size: 7.6, color: MUTED });
-  slides.push(s);
-}
-
-// 4. HYPOTHESES — explicitly prospective, not reported findings.
-{
-  const s = new Slide({ notes: `Теперь — три проверяемые гипотезы. Первая: чем чаще человек испытывает FOMO и чем выше склонность к импульсивным покупкам, тем больше у него незапланированных покупок и опыта оплаты частями. Вторая: социальное сравнение и контент блогеров могут быть связаны с покупками ради статуса или «как у других». Третья: финансовая грамотность может быть связана с меньшей частотой спонтанных трат, но сама по себе не создаёт иммунитет.\nВсе три пункта — именно гипотезы. В публикациях есть основания их изучать, но это не значит, что мы уже получили такой результат на студентах нашего вуза. В небольшом опросе мы сможем говорить об ассоциациях, но не доказывать причинно-следственные связи.` });
-  chrome(s, 4, "03  /  ГИПОТЕЗЫ  ·  ЧТО ПРОВЕРИМ");
-  title(s, "Гипотезы — вопросы,\nа не готовые ответы", { w: 7.4, h: 1.25, size: 32 });
-  const hyps = [
-    ["H1", "FOMO + импульсивность", "связаны с большим числом незапланированных покупок и более частым BNPL."],
-    ["H2", "Социальное сравнение", "связано со статусными покупками и покупками под влиянием рекомендаций."],
-    ["H3", "Финансовая грамотность", "может ослаблять связь, но не даёт автоматического «иммунитета»."],
-  ];
-  hyps.forEach(([n, head, body], i) => {
-    const y = 2.42 + i * 1.20;
-    card(s, L, y, 7.05, 0.98, { line: i === 2 ? MINT : GOLD, lineT: 60, fill: "21131A", fillT: 9 });
-    s.text(n, { x: L + 0.19, y: y + 0.19, w: 0.60, h: 0.40, font: "head", size: 21, color: i === 2 ? MINT : CORAL, bold: true });
-    s.text(head, { x: L + 0.88, y: y + 0.13, w: 5.95, h: 0.28, size: 13, color: WHITE, bold: true });
-    s.text(body, { x: L + 0.88, y: y + 0.45, w: 5.93, h: 0.40, size: 10.7, color: MUTED, lineSpacingMultiple: 1.02 });
+function fact(s, x, y, w, h, body, o = {}) {
+  const ag = o.ag ?? 8;
+  card(s, x, y, w, h, { fill: o.fill || "FFF6E8", line: o.line || "E7C89C", lineT: 0, ag });
+  s.rect({ x, y: y + 0.10, w: 0.055, h: h - 0.20, fill: RED, ag });
+  const tag = o.tag || "КАШТАН НАПОМИНАЕТ";
+  const tw = Math.min(w - 0.55, Math.max(1.28, 0.10 * tag.length + 0.25));
+  s.rect({ x: x + 0.22, y: y - 0.12, w: tw, h: 0.25, fill: RED, radius: 0.12, ag });
+  text(s, tag, x + 0.3, y - 0.11, tw - 0.15, 0.21, { size: 7.5, bold: true, color: "FFFFFF", charSpacing: 0.8, ag });
+  text(s, body, x + 0.25, y + 0.19, w - 0.45, h - 0.26, {
+    size: o.size || 11.5, color: INK, bold: o.bold ?? false, valign: "middle", ag,
   });
-  chip(s, "КОРРЕЛЯЦИЯ ≠ ПРИЧИНА", L + 0.02, 6.19, 2.55, { line: CORAL, size: 8.8 });
-  stage(s, "chestnut", { x: 8.22, y: 1.27, s: 4.18, rot: [8, -18, 0], px: 760,
-    shy: 0.85, shw: 0.70, caption: ["КАШТАН СПРАШИВАЕТ", "«Это гипотеза или ты уже купил?»"], capX: 8.28, capY: 5.90, cw: 4.0 });
-  s.text("Основания для гипотез: FOMO [4], сравнение [5], финансовая грамотность [6].", {
-    x: L, y: 6.79, w: 7.45, h: 0.17, size: 7.7, color: MUTED });
-  slides.push(s);
 }
 
-// 5. GOAL + TASKS — preserves the original project proposal.
-{
-  const s = new Slide({ notes: `Цель проекта сохраняется из оригинала: изучить психологические механизмы импульсивных покупок и их связь с финансовым поведением студентов, а затем подготовить понятную памятку. Мы не пытаемся пристыдить человека за чипсы или кружку «по акции». Вопрос другой: что произошло до клика и какую небольшую паузу можно вернуть?\nЧтобы прийти к этой цели, сначала разбираем понятия и источники, затем описываем типичные цифровые триггеры, составляем анкету и собираем ответы, а после аккуратно проверяем гипотезы. Финальный продукт — короткая памятка, которую можно использовать в повседневных покупках. Четыре пункта на слайде — план действий, а не уже завершённые этапы.` });
-  chrome(s, 5, "04  /  ПЛАН ПРОЕКТА  ·  ОТ ВОПРОСА К ПАМЯТКЕ");
-  title(s, "От теории — к полезной\nпамятке без морали", { w: 7.2, h: 1.2, size: 32 });
-  fact(s, L, 2.35, 7.10, 0.94,
-    "Понять, какие психологические механизмы и цифровые триггеры связаны с импульсивными тратами студентов.", {
-      tag: "ЦЕЛЬ", size: 12.5, line: GOLD });
-  const tasks = [
-    ["01", "Разобрать теорию", "Импульсивность, FOMO, самоконтроль и поведенческие подсказки."],
-    ["02", "Описать контекст", "Реклама, скидки, таймеры, маркетплейсы и BNPL."],
-    ["03", "Провести опрос", "Студенты 18–25 лет; целевой минимум — 50 ответов."],
-    ["04", "Собрать результат", "Проверить связи и сделать памятку «пауза до оплаты»."],
-  ];
-  tasks.forEach(([n, h, b], i) => {
-    const col = i % 2, row = Math.floor(i / 2), x = L + col * 3.62, y = 3.62 + row * 1.32;
-    card(s, x, y, 3.43, 1.10, { line: i === 3 ? CORAL : GOLD, lineT: 72, fill: CARD, fillT: 15 });
-    label(s, n, x + 0.20, y + 0.15, 0.55, CORAL, { size: 13, charSpacing: 0 });
-    s.text(h, { x: x + 0.78, y: y + 0.15, w: 2.42, h: 0.27, size: 12.2, color: WHITE, bold: true });
-    s.text(b, { x: x + 0.78, y: y + 0.49, w: 2.42, h: 0.47, size: 9.7, color: MUTED, lineSpacingMultiple: 1.02 });
+function tagPill(s, value, x, y, w, o = {}) {
+  s.rect({ x, y, w, h: o.h || 0.32, fill: o.fill || RED, radius: 0.16, fillT: o.fillT ?? 0, ag: o.ag });
+  text(s, value, x + 0.10, y + 0.055, w - 0.20, (o.h || 0.32) - 0.08, {
+    size: o.size || 8.5, color: o.color || "FFFFFF", bold: true, align: "center", valign: "middle", ag: o.ag,
   });
-  stage(s, "wallet", { x: 8.20, y: 1.35, s: 4.18, rot: [9, -20, 0], px: 760,
-    shy: 0.85, shw: 0.7, caption: ["КОШЕЛЁК", "Лучше планировать, чем стыдить"], capX: 8.32, capY: 5.97, cw: 4.0 });
-  slides.push(s);
 }
 
-// 6. TARGET + METHOD — keep the original audience and N>=50, say clearly it is a plan.
-{
-  const s = new Slide({ notes: `Аудитория исследования — студенты вузов от 18 до 25 лет. В оригинальном проекте был задан минимум в 50 участников; сохраняем его как плановый порог для учебного, разведочного опроса. Это не репрезентативная выборка всех молодых людей России.\nПланируем добровольную анонимную онлайн-анкету. В ней можно спросить о незапланированных покупках за последний месяц, использовании оплаты частями, реакции на ограниченные скидки и рекомендации в соцсетях, а также о простых практиках бюджета. В анализе начнём с описательной статистики и проверки связей между ответами. Опрос — срез самоотчётов: он не докажет, что именно FOMO «вызвал» покупку. И ещё раз: данных пока нет, этот слайд описывает будущую методику.` });
-  chrome(s, 6, "05  /  МЕТОД  ·  ЦЕЛЕВАЯ АУДИТОРИЯ");
-  title(s, "Проверяем на студентах —\nне гадаем по мемам", { w: 7.3, h: 1.22, size: 31 });
-  const blocks = [
-    ["КОГО", "Студенты 18–25 лет", "минимальный целевой объём — N ≥ 50"],
-    ["КАК", "Анонимная онлайн-анкета", "участие добровольное; без имён и оценок"],
-    ["ЧТО", "Покупки и триггеры", "FOMO, соцсети, импульсивность, бюджет, BNPL"],
-    ["АНАЛИЗ", "Сначала — описательная статистика", "затем — связи; не причинные выводы"],
-  ];
-  blocks.forEach(([tag, head, sub], i) => {
-    const y = 2.46 + i * 0.91;
-    label(s, tag, L + 0.05, y + 0.03, 1.00, i === 2 ? MINT : GOLD, { size: 8.9 });
-    s.text(head, { x: L + 1.18, y, w: 5.72, h: 0.30, size: 12.8, bold: true, color: WHITE });
-    s.text(sub, { x: L + 1.18, y: y + 0.33, w: 5.72, h: 0.32, size: 10.5, color: MUTED });
-    if (i < blocks.length - 1) s.line({ x1: L + 1.17, y1: y + 0.77, x2: L + 6.80, y2: y + 0.77, color: "FFFFFF", lineT: 90, width: 0.5 });
+function photoCard(s, src, x, y, w, h, caption, o = {}) {
+  card(s, x, y, w, h, { fill: "FFFEFA", line: "D2CCC1", lineT: 4, tape: o.tape || "EBD5B6", ag: o.ag });
+  const capH = caption ? (o.capH || 0.25) : 0.05;
+  const pad = o.pad || 0.10;
+  s.img(src, { x: x + pad, y: y + pad, w: w - 2 * pad, h: h - capH - 1.5 * pad, name: o.name });
+  if (caption) text(s, caption, x + pad, y + h - capH - 0.06, w - 2 * pad, capH, {
+    size: o.size || 7.8, color: MUTED, bold: o.bold ?? false, align: o.align || "center", valign: "middle", ag: o.ag,
   });
-  chip(s, "ПЛАН ИССЛЕДОВАНИЯ  ·  ДАННЫЕ ЕЩЁ НЕ СОБРАНЫ", L + 0.05, 6.22, 5.90, { line: CORAL, color: GOLD2, size: 8.6 });
-  stage(s, "smartphone", { x: 8.20, y: 1.25, s: 4.18, rot: [8, -16, 0], px: 760,
-    shy: 0.85, shw: 0.70, caption: ["АНКЕТА В ТЕЛЕФОНЕ", "Вопросы — да. Выдуманные итоги — нет"], capX: 8.22, capY: 5.90, cw: 4.1 });
-  slides.push(s);
 }
 
-// 7. PRACTICAL TAKEAWAY — preserve the jars meme and turn it into a useful checklist.
-{
-  const s = new Slide({ notes: `Памятка — практический выход проекта. Она не обещает, что один лайфхак отменит все спонтанные покупки. Это простые способы вернуть время на выбор. Первый вопрос: я хотел эту вещь до того, как увидел скидку или рекомендацию? Второй: купил бы её по полной цене и завтра? Третий: могу ли я оплатить её целиком, не ухудшая обязательные платежи?\nДля необязательных покупок можно испытать правило паузы — добавить вещь в список желаний и вернуться к ней через сутки. Убрать сохранённую карту или отключить рекламные уведомления — значит добавить трение. А расходы на «приятное» можно заранее выделить в отдельный бюджет. Поэтому исходный мем с банками — не мораль, а шутливое напоминание: чипсы тоже входят в бюджет, если ты так решил заранее.` });
-  chrome(s, 7, "06  /  ПРАКТИКА  ·  ПАУЗА ПЕРЕД ОПЛАТОЙ");
-  title(s, "Каштановый анти-импульс:\nтри вопроса до оплаты", { w: 7.35, h: 1.23, size: 31 });
-  const checks = [
-    ["1", "Я хотел(а) это до того, как увидел(а) скидку?"],
-    ["2", "Купил(а) бы это завтра — и по полной цене?"],
-    ["3", "Могу оплатить всю сумму без нового долга?"],
-  ];
-  checks.forEach(([n, text], i) => {
-    const y = 2.48 + i * 0.91;
-    card(s, L, y, 4.18, 0.76, { line: i === 2 ? MINT : GOLD, lineT: 72, fill: CARD, fillT: 12 });
-    s.text(n, { x: L + 0.16, y: y + 0.15, w: 0.42, h: 0.38, size: 19, font: "head", bold: true, color: CORAL });
-    s.text(text, { x: L + 0.68, y: y + 0.10, w: 3.30, h: 0.54, size: 10.8, color: WHITE, bold: true, valign: "middle", lineSpacingMultiple: 1.02 });
+function stage(s, o = {}) {
+  const x = o.x ?? 8.6, y = o.y ?? 1.43, size = o.size ?? 4.0;
+  const cx = x + size / 2, cy = y + size / 2;
+  const halo = size * 1.34;
+  s.img(A("glow.png"), { x: cx - halo / 2, y: cy - halo / 2, w: halo, h: halo, name: "!!kashtan-glow" });
+  s.rect({ x: cx - size * 0.53, y: cy - size * 0.53, w: size * 1.06, h: size * 1.06, shape: "ellipse", line: ORANGE, lineT: 76, lineW: 0.9, name: "!!kashtan-ring" });
+  s.img(A("shadow.png"), { x: cx - size * 0.45, y: y + size * 0.84, w: size * 0.9, h: size * 0.19, name: "!!kashtan-shadow" });
+  s.model("kashtan", {
+    x, y, s: size, rot: o.rot || [10, -18, 0], name: "!!m-kashtan", px: o.px || 820,
   });
-  memeCard(s, "meme-budget-jars.jpeg", 5.20, 2.55, 2.34, 2.65,
-    "ДВА ФОНДА: НА ВАЖНОЕ / НА ЧИПСЫ", { size: 7.4, foot: 0.31 });
-  chip(s, "ПАУЗА 24 ЧАСА  ·  ВИШЛИСТ  ·  БЕЗ СОХРАНЁННОЙ КАРТЫ", L, 5.38, 4.18, { line: CORAL, size: 7.9 });
-  s.text("Это инструменты выбора, не универсальное лечение и не повод стыдить себя.", {
-    x: L + 0.03, y: 5.91, w: 4.16, h: 0.58, size: 9.8, color: MUTED, lineSpacingMultiple: 1.08 });
-  stage(s, "wallet", { x: 8.20, y: 1.22, s: 4.18, rot: [9, -20, 0], px: 760,
-    shy: 0.85, shw: 0.70, caption: ["КОШЕЛЁК", "Оплата подождёт. Выбор — останется"], capX: 8.25, capY: 5.90, cw: 4.05 });
-  slides.push(s);
-}
-
-// 8. LIMITATIONS — a real critical appraisal rather than a fake success slide.
-{
-  const s = new Slide({ notes: `У проекта есть ограничения, и лучше назвать их заранее. Если мы наберём не менее 50 человек через доступные студенческие каналы, выборка будет удобной, а не случайной. Ответы о тратах — самоотчёт: человек может забыть покупку или округлить сумму. Один опрос показывает связи в конкретный момент, но не объясняет причину и следствие. Результаты нельзя автоматически переносить на всех студентов и тем более на всех потребителей.\nЗначит, будущий итог должен быть осторожным: проверить, какие факторы в этой группе связаны с незапланированными тратами, и подготовить понятную памятку. Сейчас это план исследования, а не готовые результаты, диагноз или обвинение.` });
-  chrome(s, 8, "07  /  ЧЕСТНЫЕ ОГРАНИЧЕНИЯ");
-  title(s, "50 ответов — не 50 миллионов", { w: 7.2, h: 0.80, size: 33 });
-  s.text("Мини-опрос помогает увидеть сигналы, но не выдаёт их за истину для всех.", {
-    x: L, y: 1.91, w: 7.05, h: 0.54, size: 13.2, font: "head", italic: true, color: GOLD2 });
-  const limits = [
-    ["ВЫБОРКА", "N ≥ 50 — учебный минимум, а не репрезентативность."],
-    ["САМООТЧЁТ", "Память и желание выглядеть рациональнее могут искажать ответы."],
-    ["ОДИН СРЕЗ", "Связь между факторами не доказывает причинность."],
-    ["НЕ ДИАГНОЗ", "Мы изучаем покупки, не ставим психологические ярлыки."],
-  ];
-  limits.forEach(([head, body], i) => {
-    const col = i % 2, row = Math.floor(i / 2), x = L + col * 3.60, y = 2.83 + row * 1.23;
-    card(s, x, y, 3.42, 1.03, { line: i === 3 ? MINT : GOLD, lineT: 73, fill: CARD, fillT: 13 });
-    label(s, head, x + 0.19, y + 0.16, 3.05, i === 3 ? MINT : GOLD, { size: 8.8 });
-    s.text(body, { x: x + 0.19, y: y + 0.47, w: 3.02, h: 0.44, size: 10.4, color: WHITE, lineSpacingMultiple: 1.02 });
+  tagPill(s, o.badge || "КАШТАН · РЕВИЗОР ЧЕКА", o.badgeX ?? x + 0.35, o.badgeY ?? y + size - 0.04,
+    o.badgeW || size - 0.7, { fill: INK, h: 0.31, size: 7.6, ag: o.ag });
+  if (o.quote) text(s, o.quote, x + 0.15, y - 0.15, size - 0.30, 0.36, {
+    size: 9.6, bold: true, color: INK, align: "center", valign: "middle", ag: o.ag,
   });
-  fact(s, L, 5.56, 7.02, 0.83,
-    "Цель проекта: вернуть паузу перед оплатой и выбирать без самостыда.", {
-      tag: "ОЖИДАЕМЫЙ ПРОДУКТ", size: 12.3, line: CORAL });
-  stage(s, "chestnut", { x: 8.22, y: 1.25, s: 4.18, rot: [8, -18, 0], px: 760,
-    shy: 0.85, shw: 0.70, caption: ["КАШТАН ЗА ЧЕСТНОСТЬ", "Мем — не метод, но хороший крючок"], capX: 8.22, capY: 5.90, cw: 4.08 });
+}
+
+function numberedCard(s, x, y, w, h, n, head, body, o = {}) {
+  card(s, x, y, w, h, { fill: o.fill, line: o.line, ag: o.ag ?? n });
+  text(s, String(n).padStart(2, "0"), x + 0.16, y + 0.14, 0.38, 0.35, {
+    font: "head", size: 18, color: o.ncolor || RED, bold: true, ag: o.ag ?? n,
+  });
+  text(s, head, x + 0.62, y + 0.17, w - 0.78, 0.40, { size: o.headSize || 12, bold: true, color: INK, ag: o.ag ?? n });
+  text(s, body, x + 0.18, y + 0.65, w - 0.35, h - 0.75, {
+    size: o.bodySize || 10.5, color: MUTED, lineSpacingMultiple: 1.0, ag: o.ag ?? n,
+  });
+}
+
+function addSlide(s, idx) {
+  chrome(s, idx);
   slides.push(s);
 }
 
-// 9. CLOSE — direct, warm, source-aware and easy to present.
+// 1 — title / callback to the original chestnut picture and meme collage.
 {
-  const s = new Slide({ notes: `Итог проекта можно уместить в одну мысль: импульсивная покупка — это не только личное качество и не только реклама. Важны человек, ситуация и устройство интерфейса. Мы планируем проверить три связи на небольшой студенческой выборке и подготовить инструменты, которые возвращают выбор: пауза, список желаний, понятный лимит и проверка полной суммы.\nА каштан остаётся с нами — как в оригинале. Его вопрос перед последним кликом: «Я это планировал? Смогу спокойно оплатить? Захочу ли я это завтра?» Спасибо за внимание. Все источники и полный текст выступления находятся в сопроводительных файлах, а заметки докладчика — внутри презентации.` });
-  chrome(s, 9, "08  /  ИТОГ  ·  СПАСИБО ЗА ВНИМАНИЕ");
-  title(s, "Сначала пауза.\nПотом оплата.", { x: L, y: 1.24, w: 6.6, h: 1.75, size: 42 });
-  s.text("Покупка — это человек + ситуация + интерфейс.\nЦель — не запретить радость, а вернуть себе выбор.", {
-    x: L + 0.04, y: 3.25, w: 6.28, h: 0.98, size: 16.5, font: "head",
-    color: GOLD2, lineSpacingMultiple: 1.12 });
-  chip(s, "КАШТАН СПРАШИВАЕТ: «Я ЭТО ПЛАНИРОВАЛ(А)?»", L + 0.04, 4.52, 5.95, { line: CORAL, size: 8.8 });
-  s.text("Спасибо за внимание!", { x: L + 0.06, y: 4.93, w: 5.7, h: 0.38, font: "head", size: 18, italic: true, color: CORAL });
-  memeCard(s, "chestnuts-original.jpeg", L, 5.40, 2.48, 1.46,
-    "КАШТАН — ЛЕГЕНДА ОРИГИНАЛА ✓", { size: 7.4, foot: 0.27, pad: 0.07 });
-  s.text("Источники: [1] оценка BNPL 2025; [2] ФЗ № 283-ФЗ; [3–7] научные работы об импульсивных покупках, FOMO, сравнении и финансовой грамотности.\nПолные библиографические данные и ссылки — в отдельном файле источников.", {
-    x: 3.48, y: 5.47, w: 3.38, h: 1.20, size: 9.8, color: MUTED, lineSpacingMultiple: 1.12 });
-  stage(s, "chestnut", { x: 7.15, y: 0.82, s: 5.45, rot: [8, -18, 0], px: 900,
-    shy: 0.84, shw: 0.72, caption: ["КАШТАН ОСТАЛСЯ", "Мем-легенда оригинала — теперь 3D"], capX: 7.65, capY: 6.40, cw: 4.48 });
-  slides.push(s);
+  const s = new Slide({ notes:
+`Сегодня говорим о психологии импульсивных трат. В центре — знакомая сцена: собирался только посмотреть, а в корзине уже несколько вещей. Каштан здесь не научная переменная, а талисман проекта и намеренная отсылка к исходной презентации: оригинальная фотография каштанов сохранена, а рядом появился её 3D-герой. Мы не будем стыдить покупателя и сводить всё к «слабой воле». Посмотрим на сигналы среды, самоконтроль и то, как устроен момент оплаты. В конце предложим несколько способов создать паузу перед решением. Важно: результаты опроса пока не собраны; далее показаны план и гипотезы, а не готовые выводы.` });
+  addSlide(s, 1);
+  label(s, "Когда шёл только посмотреть", L, 1.12, 5.6, { size: 9.5, color: RED_D });
+  title(s, "ПОКУПКА\nНА АВТОПИЛОТЕ", { y: 1.55, w: 6.6, h: 1.65, size: 38, underlineY: 1.52, underlineW: 2.2 });
+  text(s, "Почему мы берём лишнее — и как вернуть себе кнопку «пауза».", L, 3.48, 6.2, 0.75, {
+    size: 19, color: INK, bold: false, lineSpacingMultiple: 1.0, ag: 1,
+  });
+  tagPill(s, "КОГНИТИВНЫЕ ИСКАЖЕНИЯ  ·  САМОКОНТРОЛЬ  ·  ДЕНЬГИ", L, 4.55, 5.65, { fill: RED, h: 0.38, size: 8.1, ag: 2 });
+  card(s, L, 5.20, 4.40, 0.88, { fill: "FFFDF8", line: "E4D6C3", ag: 3 });
+  text(s, "Я: «просто посмотрю»     Корзина: «принято»", L + 0.22, 5.43, 3.95, 0.40, {
+    size: 13.2, bold: true, color: INK, align: "center", valign: "middle", ag: 3,
+  });
+  photoCard(s, A("chestnuts-original.jpg"), 5.52, 4.50, 2.12, 1.53, "ФОТО КАШТАНА ИЗ ОРИГИНАЛА", { pad: 0.09, capH: 0.23, size: 7.0, tape: "EFCBA3" });
+  stage(s, { x: 8.45, y: 1.18, size: 4.25, quote: "«Я только за каштанами»", badge: "ЗНАКОМЬТЕСЬ: КАШТАН", badgeY: 5.45, badgeW: 3.45, px: 900 });
+  fact(s, L, 6.17, 7.0, 0.57, "Это проект-исследование: сначала проверим гипотезы — потом делаем выводы.", { tag: "ВАЖНО", size: 10.4, ag: 4 });
 }
 
-// Morph choreography: the next 3D exhibit waits outside the right edge; the previous leaves left.
-for (let i = 0; i < slides.length; i++) {
-  const cur = slides[i].hero, next = slides[i + 1]?.hero;
-  if (next && cur && next.key !== cur.key) {
-    slides[i].model(next.key, { x: SW + 0.60, y: next.y + 0.32, s: next.s,
-      rot: [next.rot[0], next.rot[1] + 78, next.rot[2]], name: `!!m-${next.key}`, ghost: true });
-    slides[i + 1].model(cur.key, { x: -cur.s - 0.60, y: cur.y + 0.32, s: cur.s,
-      rot: [cur.rot[0], cur.rot[1] - 78, cur.rot[2]], name: `!!m-${cur.key}`, ghost: true });
-  }
+// 2 — motivation/context, retaining the original shopping meme.
+{
+  const s = new Slide({ notes:
+`В исходной версии важность темы объяснялась тем, что покупки всё чаще начинаются в телефоне: подборка, пуш-уведомление, таймер, сохранённая карта, оплата частями. Мы сохраняем саму тему BNPL, но не переносим непроверенные цифры о рынке и законе как установленный факт. Для проекта важен более точный вопрос: какие ситуации участники сами связывают со спонтанными покупками? На картинке — мем из исходника про 106 рублей и пять маркетплейсов. Это смешная иллюстрация узнаваемого поведения, а не доказательство его распространённости. Исследование будет измерять ответы студентов, а не выдавать мем за статистику.` });
+  addSlide(s, 2);
+  title(s, "«Просто посмотрю» — и уже оплата", { w: 7.55, size: 31, underlineW: 1.65 });
+  numberedCard(s, L, 2.30, 2.15, 1.52, 1, "СИГНАЛ", "Уведомление, подборка, яркая витрина", { ag: 1 });
+  numberedCard(s, 3.08, 2.30, 2.15, 1.52, 2, "ТОРОПЯТ", "Таймер, «последний шанс», отзывы", { ag: 2 });
+  numberedCard(s, 5.38, 2.30, 2.15, 1.52, 3, "ОПЛАТА", "Сохранённая карта или «частями»", { ag: 3 });
+  photoCard(s, A("meme-shopping-106.jpg"), L, 4.18, 2.82, 2.27,
+    "МЕМ ИЗ ИСХОДНОЙ ПРЕЗЕНТАЦИИ", { pad: 0.12, capH: 0.28, size: 7.3, tape: "F3D0C7" });
+  card(s, 3.82, 4.24, 3.72, 1.28, { fill: "EAF1F3", line: "B7CBD4", ag: 4 });
+  label(s, "Что проверяем", 4.04, 4.45, 2.9, { color: BLUE, ag: 4 });
+  text(s, "Какие триггеры студенты замечают перед незапланированной покупкой?", 4.04, 4.80, 3.20, 0.55, {
+    size: 13, bold: true, color: INK, ag: 4,
+  });
+  fact(s, 3.82, 5.77, 3.72, 0.70, "В исходнике были цифры о BNPL. Без первоисточника мы не выдаём их за факт.", {
+    tag: "ЧЕСТНО ПРО ДАННЫЕ", size: 9.6, ag: 5,
+  });
+  stage(s, { x: 8.55, y: 1.53, size: 3.95, quote: "«Сначала избранное»", badge: "ПРОВЕРЯЕМ, НЕ ОБВИНЯЕМ", badgeW: 3.2, px: 820 });
 }
 
-// ---------- 3D assets: generate missing .glb files and poster rasters ----------
-const MODELS = path.join(__dirname, "models");
+// 3 — operational definition; original chestnut mascot remains central.
+{
+  const s = new Slide({ notes:
+`Важно различать незапланированную покупку и импульсивную. Незапланированная — это любая покупка, которой не было в исходном списке: например, вспомнил дома, что закончился чай. В исследованиях импульсивную покупку обычно описывают как внезапное сильное желание приобрести что-то, при котором обдумывание может сократиться. Это не означает, что каждая такая покупка вредна или что человека надо обвинять. Для анкеты нужно дать участникам одно и то же определение, иначе ответы окажутся несопоставимыми. Определение опирается на работы Рука и Верпланкен с Херабади; буквальную цитату не используем.` });
+  addSlide(s, 3);
+  title(s, "Незапланированная ≠ импульсивная", { w: 7.6, size: 32, underlineW: 1.8 });
+  numberedCard(s, L, 2.38, 2.12, 1.68, 1, "ЗАПЛАНИРОВАНА", "В списке до похода в магазин", { ag: 1, headSize: 11.1, bodySize: 10.2 });
+  numberedCard(s, 3.05, 2.38, 2.12, 1.68, 2, "НЕ ЗАПЛАНИРОВАНА", "Вспомнил по пути: «а, ещё чай»", { ag: 2, headSize: 10.4, bodySize: 10.2 });
+  numberedCard(s, 5.32, 2.38, 2.12, 1.68, 3, "ИМПУЛЬСИВНАЯ", "Сильное внезапное «хочу сейчас»", { ag: 3, headSize: 10.8, bodySize: 10.2 });
+  card(s, L, 4.50, 6.66, 0.86, { fill: "FFFDF8", line: "DED5C7", ag: 4 });
+  label(s, "Рабочее определение для анкеты · [1, 2]", L + 0.20, 4.67, 5.9, { color: RED_D, ag: 4 });
+  text(s, "Внезапное сильное желание купить, при котором на обдумывание может оставаться меньше времени.", L + 0.20, 4.97, 6.15, 0.28, {
+    size: 11.3, bold: true, color: INK, ag: 4,
+  });
+  fact(s, L, 5.78, 6.66, 0.78, "Импульс — описание ситуации и решения, а не диагноз и не «плохой характер».", {
+    tag: "КАШТАН СНЯЛ ОБВИНЕНИЕ", size: 10.5, ag: 5,
+  });
+  stage(s, { x: 8.63, y: 1.58, size: 3.92, quote: "«Список? Какой список?»", badge: "СНАЧАЛА ОПРЕДЕЛИМ ТЕРМИНЫ", badgeW: 3.25, px: 820 });
+}
+
+// 4 — a careful, simplified impulse loop and the original 100-ruble cat meme.
+{
+  const s = new Slide({ notes:
+`На этом слайде — упрощённая рабочая схема, а не универсальный закон. Сначала появляется триггер — скидка, настроение, рекомендация или напоминание. Затем может возникнуть желание купить прямо сейчас. Быстрый checkout сокращает паузу, после которой человек иногда испытывает радость, иногда сожаление, а иногда не чувствует ничего особенного. Теория Дхолакиа рассматривает и ситуацию, и внутреннее желание, и сопротивление импульсу. Вопрос анкеты не будет звучать «вы безвольный?». Мы спросим, как часто покупки возникали внезапно и как часто человек позже сожалел о них. Мем с котом и списанием ста рублей сохранён из оригинала — он иллюстрирует узнаваемый момент, но ничего не доказывает.` });
+  addSlide(s, 4);
+  title(s, "Петля: триггер → импульс → чек", { w: 7.5, size: 31, underlineW: 1.42 });
+  numberedCard(s, L, 2.34, 1.58, 1.55, 1, "ТРИГГЕР", "Таймер / лента / настроение", { ag: 1, headSize: 10.6, bodySize: 9.4 });
+  text(s, "→", 2.40, 2.78, 0.25, 0.4, { size: 20, bold: true, color: RED, align: "center", ag: 2 });
+  numberedCard(s, 2.68, 2.34, 1.58, 1.55, 2, "ХОЧУ", "«Надо взять сейчас»", { ag: 2, headSize: 10.8, bodySize: 9.6 });
+  text(s, "→", 4.34, 2.78, 0.25, 0.4, { size: 20, bold: true, color: RED, align: "center", ag: 3 });
+  numberedCard(s, 4.62, 2.34, 1.58, 1.55, 3, "КЛИК", "Оплата почти без паузы", { ag: 3, headSize: 10.8, bodySize: 9.4 });
+  text(s, "→", 6.28, 2.78, 0.25, 0.4, { size: 20, bold: true, color: RED, align: "center", ag: 4 });
+  numberedCard(s, 6.56, 2.34, 1.58, 1.55, 4, "ПОТОМ", "«Зачем?»", { ag: 4, headSize: 10.8, bodySize: 9.6 });
+  card(s, L, 4.25, 4.66, 1.07, { fill: "EAF1F3", line: "B7CBD4", ag: 5 });
+  label(s, "Модель для исследования · [3]", L + 0.20, 4.43, 4.1, { color: BLUE, ag: 5 });
+  text(s, "Один и тот же триггер не приводит к покупке у каждого человека.", L + 0.20, 4.77, 4.14, 0.36, {
+    size: 11.4, color: INK, bold: true, ag: 5,
+  });
+  photoCard(s, A("meme-charge-100.jpg"), 5.62, 4.25, 2.88, 2.12, "«С ВАС СПИСАНО 100 РУБ» · МЕМ ИЗ ОРИГИНАЛА", {
+    pad: 0.13, capH: 0.28, size: 7.2, tape: "F3D0C7",
+  });
+  fact(s, L, 5.77, 4.66, 0.78, "Наблюдаем паттерн; не клеим ярлык на человека.", { tag: "МЕМ ≠ ДОКАЗАТЕЛЬСТВО", size: 10.4, ag: 6 });
+  stage(s, { x: 8.67, y: 1.55, size: 3.90, quote: "«Чек уже в чате»", badge: "ПАУЗА МЕЖДУ «ХОЧУ» И «ОПЛАТИТЬ»", badgeW: 3.5, px: 820 });
+}
+
+// 5 — digital cues; includes the original serotonin meme as a playful example only.
+{
+  const s = new Slide({ notes:
+`Мы выделяем несколько возможных сигналов среды, которые можно спросить в анкете: дефицит и таймеры, отзывы и ощущение «все уже купили», сравнение с чужими покупками, а также дистанция между решением и оплатой. Исследования дефицита и социального влияния помогают обосновать, почему такие сигналы стоит измерять, но не позволяют заранее обвинить конкретный интерфейс или доказать причину в нашем маленьком опросе. Мем про «инвестировала в серотонин» мы сохранили из исходника как юмористическую иллюстрацию покупки ради настроения. Это не медицинское объяснение и не буквальное измерение нейромедиаторов. В анкете фиксируем самоотчёт: что человек заметил, что купил и как потом оценил решение.` });
+  addSlide(s, 5);
+  title(s, "Витрина нажимает на разные кнопки", { w: 7.55, size: 31, underlineW: 1.55 });
+  numberedCard(s, L, 2.30, 3.22, 1.30, 1, "ДЕФИЦИТ / СРОЧНОСТЬ", "Таймер, «осталось 2 штуки» · [5]", { ag: 1, headSize: 11.1, bodySize: 10 });
+  numberedCard(s, 4.18, 2.30, 3.22, 1.30, 2, "СОЦИАЛЬНОЕ ДОКАЗАТЕЛЬСТВО", "Отзывы, счётчик покупок · [6]", { ag: 2, headSize: 10.0, bodySize: 10 });
+  numberedCard(s, L, 3.85, 3.22, 1.30, 3, "FOMO / СРАВНЕНИЕ", "«Все уже взяли» · [7]", { ag: 3, headSize: 10.7, bodySize: 10 });
+  numberedCard(s, 4.18, 3.85, 3.22, 1.30, 4, "ОПЛАТА / ФРЕЙМИНГ", "Карта, «частями», цена со скидкой · [4, 8]", { ag: 4, headSize: 10.5, bodySize: 9.8 });
+  photoCard(s, A("meme-serotonin.jpg"), 5.66, 5.35, 1.74, 1.36, "МЕМ ИЗ ИСХОДНИКА — НЕ ДИАГНОЗ", { pad: 0.08, capH: 0.23, size: 6.4, tape: "EACEEB" });
+  fact(s, L, 5.55, 4.65, 0.98, "Триггеры — переменные исследования, а не ярлыки вроде «шопоголик».", { tag: "НЕ ПУТАЕМ С ПРИЧИНОЙ", size: 10.4, ag: 5 });
+  stage(s, { x: 8.66, y: 1.55, size: 3.91, quote: "«Акция заканчивается… когда?»", badge: "ПРОВЕРЯЕМ ТРИГГЕРЫ", badgeW: 3.15, px: 820 });
+}
+
+// 6 — audience, research question and ethical survey plan.
+{
+  const s = new Slide({ notes:
+`Целевая группа сохранена из исходного проекта: студенты вузов от восемнадцати до двадцати пяти лет. Планируем набрать не менее пятидесяти добровольцев; это целевой размер для учебного разведочного исследования, а не уже собранная выборка. Главный вопрос: какие ситуации и способы оплаты студенты сами связывают с незапланированными покупками? Анкета будет анонимной и добровольной. Не спрашиваем номер карты, точные банковские данные, имя или логин. Для учебной работы достаточно частоты самоотчётов и оценки ситуаций. Если опрос ещё не прошёл, на защите честно говорим «планируем» и не рисуем результаты заранее.` });
+  addSlide(s, 6);
+  title(s, "Кого и о чём мы спрашиваем?", { w: 7.50, size: 32, underlineW: 1.55 });
+  card(s, L, 2.28, 6.80, 1.13, { fill: "FFFDF8", line: "D8D2C8", ag: 1 });
+  label(s, "Исследовательский вопрос", L + 0.22, 2.48, 4.2, { ag: 1 });
+  text(s, "Какие триггеры студенты связывают со спонтанными тратами — и что помогает им остановиться?", L + 0.22, 2.82, 6.32, 0.39, {
+    size: 13, bold: true, color: INK, ag: 1,
+  });
+  numberedCard(s, L, 3.73, 3.18, 1.25, 1, "КТО", "Студенты вузов · 18–25 лет", { ag: 2, headSize: 11.5, bodySize: 10.7 });
+  numberedCard(s, 4.18, 3.73, 3.18, 1.25, 2, "СКОЛЬКО", "Планируемый набор: N ≥ 50", { ag: 3, headSize: 11.5, bodySize: 10.7 });
+  card(s, L, 5.27, 6.80, 0.74, { fill: "EAF1F3", line: "B7CBD4", ag: 4 });
+  label(s, "Формат", L + 0.22, 5.43, 1.0, { color: BLUE, ag: 4 });
+  text(s, "Анонимный добровольный онлайн-опрос · без ФИО, логинов и данных банковской карты.", L + 1.25, 5.42, 5.25, 0.36, {
+    size: 10.7, color: INK, bold: true, ag: 4,
+  });
+  fact(s, L, 6.19, 6.80, 0.52, "N ≥ 50 — цель набора, не число уже опрошенных.", { tag: "БЕЗ ВЫДУМАННЫХ ДАННЫХ", size: 9.7, ag: 5 });
+  stage(s, { x: 8.68, y: 1.55, size: 3.91, quote: "«Личные данные? Не, спасибо»", badge: "АНОНИМНО И ДОБРОВОЛЬНО", badgeW: 3.20, px: 820 });
+}
+
+// 7 — measurable hypotheses, explicitly correlational.
+{
+  const s = new Slide({ notes:
+`Три исходные гипотезы уточнены так, чтобы их можно было проверять вопросами анкеты. Первая: выраженность FOMO и склонность к импульсивным покупкам связаны с частотой незапланированных покупок и использованием оплаты частями. Вторая: социальное сравнение связано с самоотчётами о статусных покупках. Третья: финансовая грамотность может быть связана с более частым планированием бюджета, но мы не предполагаем, что знания полностью устраняют импульсы. Это именно гипотезы, а не результаты. Поскольку планируется однократный опрос, мы сможем говорить о связях в ответах, но не докажем, что один фактор вызвал другой.` });
+  addSlide(s, 7);
+  title(s, "Гипотезы: ищем связи, не виноватых", { w: 7.6, size: 31, underlineW: 1.8 });
+  const rows = [
+    ["H1", "FOMO / импульсивность связаны с более частыми незапланированными покупками.", "Переменные: частота, FOMO, оплата частями."],
+    ["H2", "Социальное сравнение связано с большим числом статусных покупок.", "Переменные: сравнение, категории покупок."],
+    ["H3", "Финансовая грамотность связана с планированием, но не гарантирует «иммунитет».", "Переменные: самопроверка знаний, бюджет, импульс."],
+  ];
+  rows.forEach(([n, h, d], i) => {
+    const y = 2.30 + i * 1.00;
+    card(s, L, y, 7.00, 0.82, { fill: i === 1 ? "FFF8EF" : "FFFDF8", line: "DAD2C6", ag: i + 1 });
+    text(s, n, L + 0.18, y + 0.19, 0.56, 0.37, { font: "head", size: 19, color: RED, bold: true, ag: i + 1 });
+    text(s, h, L + 0.84, y + 0.12, 5.88, 0.35, { size: 11.9, color: INK, bold: true, ag: i + 1 });
+    text(s, d, L + 0.84, y + 0.49, 5.92, 0.20, { size: 9.5, color: MUTED, ag: i + 1 });
+  });
+  card(s, L, 5.54, 7.00, 0.65, { fill: "EAF1F3", line: "B7CBD4", ag: 4 });
+  label(s, "Как проверяем", L + 0.20, 5.69, 1.48, { color: BLUE, ag: 4 });
+  text(s, "Частоты и связи рангов (например, Спирмен). Поперечный опрос не доказывает причинность.", L + 1.75, 5.68, 4.98, 0.32, {
+    size: 10, color: INK, bold: true, ag: 4,
+  });
+  fact(s, L, 6.30, 7.00, 0.42, "До сбора ответов ни одну H1–H3 нельзя объявлять подтверждённой.", { tag: "ГИПОТЕЗА ≠ ВЫВОД", size: 9.3, ag: 5 });
+  stage(s, { x: 8.68, y: 1.55, size: 3.91, quote: "«Сначала данные, потом выводы»", badge: "НЕ ПРИДУМЫВАЕМ РЕЗУЛЬТАТЫ", badgeW: 3.35, px: 820 });
+}
+
+// 8 — revised task list and project timeline; preserves the original budget meme.
+{
+  const s = new Slide({ notes:
+`План проекта превращаем в последовательность, у которой есть проверяемый результат на каждом шаге. Сначала изучаем литературу и выбираем определения. Затем составляем короткую анкету и проверяем, понятны ли вопросы нескольким добровольцам. После этого собираем ответы студентов, кодируем их без идентификаторов и считаем описательные показатели и простые связи. Наконец, делаем памятку о паузе перед покупкой. Мем из исходника про разные «банки» оставлен как лёгкая иллюстрация конфликта приоритетов, не как рекомендация тратить на одно или другое. В реальном опросе мы не просим раскрывать личные расходы; достаточно диапазонов и самооценок.` });
+  addSlide(s, 8);
+  title(s, "План: от анкеты до памятки", { w: 7.55, size: 32, underlineW: 1.44 });
+  const items = [
+    ["Теория", "Термины, триггеры, границы исследования"],
+    ["Анкета", "Короткие вопросы + проверка формулировок"],
+    ["Опрос", "Добровольные ответы студентов 18–25"],
+    ["Анализ", "Частоты, описательная статистика, связи"],
+    ["Памятка", "Пауза, бюджет, осознанный checkout"],
+  ];
+  items.forEach(([head, desc], i) => {
+    const y = 2.22 + i * 0.62;
+    s.rect({ x: L + 0.18, y: y + 0.08, w: 0.28, h: 0.28, shape: "ellipse", fill: i === 4 ? GREEN : RED, ag: i + 1 });
+    if (i < items.length - 1) s.line({ x1: L + 0.32, y1: y + 0.34, x2: L + 0.32, y2: y + 0.70, color: "CFBFB1", width: 1.5, ag: i + 1 });
+    text(s, String(i + 1).padStart(2, "0"), L + 0.62, y + 0.05, 0.46, 0.33, { size: 15, bold: true, color: RED_D, ag: i + 1 });
+    text(s, head, L + 1.12, y + 0.04, 1.48, 0.29, { size: 12.4, bold: true, color: INK, ag: i + 1 });
+    text(s, desc, L + 2.67, y + 0.06, 3.40, 0.34, { size: 10.3, color: MUTED, ag: i + 1 });
+  });
+  photoCard(s, A("meme-budget-jars.jpg"), 6.18, 4.79, 1.58, 1.72, "БЮДЖЕТНЫЙ МЕМ ИЗ ОРИГИНАЛА", { pad: 0.08, capH: 0.25, size: 6.1, tape: "D7E7D4" });
+  fact(s, L, 5.71, 4.96, 0.95, "Собираем минимум данных: никакой банковской тайны в анкете.", { tag: "ЭТИКА ПРЕЖДЕ ВСЕГО", size: 10.2, ag: 6 });
+  stage(s, { x: 8.68, y: 1.55, size: 3.91, quote: "«Без личных данных, пожалуйста»", badge: "5 ШАГОВ · 1 ЧЕСТНЫЙ ВЫВОД", badgeW: 3.30, px: 820 });
+}
+
+// 9 — practical output, preserving the original money-fall meme without overclaiming.
+{
+  const s = new Slide({ notes:
+`Практический результат — памятка не про запреты и не про стыд, а про возможность добавить несколько секунд на решение. Первый приём — отложить несрочную покупку в избранное и вернуться к ней завтра. Второй — посмотреть, не мешает ли сохранённая карта или автопокупка: если да, убрать быстрый сценарий. Третий — перед оплатой задать три вопроса: действительно ли вещь нужна, подходит ли она бюджету, купил бы я её без таймера и скидки? Это предложения проекта, а не обещание, что каждый приём сработает у всех. После сбора данных памятку можно обсудить со студентами и улучшить. Мем с деньгами из исходника остаётся визуальной шуткой, а не финансовым советом.` });
+  addSlide(s, 9);
+  title(s, "Пауза вместо чувства вины", { w: 7.55, size: 33, underlineW: 1.38 });
+  const tips = [
+    ["СОХРАНИ", "Положи несрочную вещь в избранное. Вернись завтра."],
+    ["ДОБАВЬ ТРЕНИЕ", "Если быстрый checkout мешает — убери сохранённую карту."],
+    ["СПРОСИ СЕБЯ", "Нужно? В бюджете? Взял(а) бы без таймера и скидки?"],
+  ];
+  tips.forEach(([tag, body], i) => {
+    const y = 2.24 + i * 1.02;
+    card(s, L, y, 6.86, 0.82, { fill: i === 1 ? "FFF6E8" : "FFFDF8", line: "DAD2C6", ag: i + 1 });
+    tagPill(s, tag, L + 0.16, y + 0.23, 1.42, { fill: i === 1 ? ORANGE : RED, h: 0.32, size: 7.7, ag: i + 1 });
+    text(s, body, L + 1.76, y + 0.18, 4.84, 0.45, { size: 11.4, bold: true, color: INK, valign: "middle", ag: i + 1 });
+  });
+  photoCard(s, A("meme-money-fall.jpg"), 5.92, 5.44, 1.78, 1.25, "ДЕНЬГИ ПАДАЮТ, БЮДЖЕТ ПЛАЧЕТ · МЕМ ИЗ ОРИГИНАЛА", { pad: 0.08, capH: 0.27, size: 5.9, tape: "F3D0C7" });
+  fact(s, L, 5.55, 4.74, 0.94, "Не запрет, а небольшая пауза возвращает выбор покупателю.", { tag: "ИДЕЯ ПАМЯТКИ", size: 10.5, ag: 5 });
+  stage(s, { x: 8.68, y: 1.55, size: 3.91, quote: "«В избранное — и завтра решим»", badge: "НЕ ЗАПРЕТ, А ПАУЗА", badgeW: 2.75, px: 820 });
+}
+
+// 10 — conclusion + compact bibliography. Full, slide-mapped citations go to exports/*.md.
+{
+  const s = new Slide({ notes:
+`Подведём итог. Исходная презентация уже содержала удачную интонацию — мемы, каштан и узнаваемые ситуации с покупками. Мы сохранили эту интонацию, но уточнили определения, отделили мемы от данных, добавили проверяемые гипотезы, анонимный план опроса, ограничения и источники. Наш собственный вывод для проекта: разумный контроль — это не только «держи себя в руках», но и среда, в которой можно сделать паузу и проверить бюджет. Это предложение, не результат эксперимента. Каштан возвращает нас к исходному образу и закрывает чек. Спасибо за внимание; после опроса гипотезы нужно будет подтвердить, уточнить или отвергнуть.` });
+  addSlide(s, 10);
+  title(s, "Каштан проверил чек.\nТеперь — ваш ход.", { w: 7.15, h: 1.55, size: 32, underlineY: 1.43, underlineW: 1.45 });
+  card(s, L, 2.93, 7.02, 0.93, { fill: "FFF6E8", line: "E7C89C", ag: 1 });
+  label(s, "Наш вывод для проекта", L + 0.20, 3.10, 4.0, { ag: 1 });
+  text(s, "Контроль — это не стыд, а понятный бюджет + пауза + меньше кнопок «купить сейчас».", L + 0.20, 3.42, 6.55, 0.32, {
+    size: 12.0, bold: true, color: INK, ag: 1,
+  });
+  text(s, "ИСТОЧНИКИ · КЛЮЧЕВЫЕ РАБОТЫ", L, 4.08, 6.80, 0.22, { size: 8.2, bold: true, color: RED_D, charSpacing: 1.0 });
+  const compact = [
+    "[1] Rook (1987), The Buying Impulse. J. Consumer Research, 14(2), 189–199.",
+    "[2] Verplanken & Herabadi (2001), Impulse buying tendency. Eur. J. Personality, 15(S1), S71–S83.",
+    "[3] Dholakia (2000), Temptation and resistance. Psychology & Marketing, 17(11), 955–982.",
+    "[4] Soman (2001), Payment mechanism and spending. J. Consumer Research, 27(4), 460–474.",
+    "[5] Aggarwal et al. (2011), Scarcity messages. Journal of Advertising, 40(3), 19–30.",
+    "[6] Cialdini (2009), Influence: Science and Practice, 5th ed. · [7] Przybylski et al. (2013), FoMO.",
+    "[8] Tversky & Kahneman (1981), The framing of decisions. Science, 211(4481), 453–458.",
+  ];
+  compact.forEach((item, i) => text(s, item, L, 4.35 + i * 0.26, 7.00, 0.22, {
+    size: 7.3, color: MUTED, ag: 2 + Math.floor(i / 3),
+  }));
+  photoCard(s, A("chestnuts-original.jpg"), 7.88, 5.30, 1.75, 1.30, "КАШТАН ИЗ ОРИГИНАЛЬНОГО ФАЙЛА", { pad: 0.08, capH: 0.22, size: 5.9, tape: "EFCBA3" });
+  stage(s, { x: 9.46, y: 1.48, size: 3.18, quote: "«Пауза. Потом покупка.»", badge: "СПАСИБО!", badgeW: 1.70, px: 760 });
+  fact(s, L, 6.42, 6.80, 0.48, "Сначала соберём ответы — затем сообщим результаты.", { tag: "ПРОЕКТ ПРОДОЛЖАЕТСЯ", size: 9.0, ag: 5 });
+}
+
+const MODELS = path.join(HERE, "models");
 function prepareModels() {
-  const glbDir = path.join(MODELS, "glb");
-  const env = { ...process.env, GLB_DIR: glbDir,
-    LD_LIBRARY_PATH: [process.env.BLENDER_LIBS || "/tmp/bstub", process.env.LD_LIBRARY_PATH || ""].join(":") };
+  const env = {
+    ...process.env,
+    GLB_DIR: path.join(MODELS, "glb"),
+    LD_LIBRARY_PATH: [process.env.BLENDER_LIBS || "/tmp/bstub", process.env.LD_LIBRARY_PATH || ""].filter(Boolean).join(":"),
+  };
   const keys = new Set();
   slides.forEach((s) => s.els.forEach((e) => e.t === "model" && keys.add(e.key)));
-  const missing = [...keys].filter((key) => !fs.existsSync(path.join(glbDir, key + ".glb")));
-  if (missing.length) {
-    console.log("building 3D models:", missing.join(", "));
-    execSync(`python3 ${path.join(MODELS, "make_models.py")} ${missing.join(" ")}`, { stdio: "inherit", env });
-  }
-  const rasterDir = path.join(MODELS, "rasters");
-  fs.mkdirSync(rasterDir, { recursive: true });
-  const jobs = [];
-  let n = 0;
-  slides.forEach((s) => s.els.forEach((e) => {
-    if (e.t !== "model") return;
-    e.id = `imp${++n}`;
-    if (e.ghost) { e.raster = A("clear.png"); return; }
-    let px = e.px || Math.round(Math.min(980, Math.max(220, e.s * 165)));
-    if (process.env.FAST) px = Math.max(180, Math.round(px / 3));
-    const glb = fs.readFileSync(path.join(glbDir, e.key + ".glb"));
-    const hash = crypto.createHash("md5").update(glb).update(JSON.stringify([e.rot, px, 3])).digest("hex").slice(0, 10);
-    e.raster = path.join(rasterDir, `${e.key}-${hash}.png`);
-    if (!fs.existsSync(e.raster) && !jobs.some((j) => j.out === e.raster)) jobs.push({ key: e.key, rot: e.rot, px, out: e.raster });
-  }));
-  if (jobs.length) {
-    console.log(`rendering ${jobs.length} model poster(s) with Blender…`);
-    const jobsFile = path.join(rasterDir, "_jobs.json");
-    fs.writeFileSync(jobsFile, JSON.stringify(jobs));
-    execSync(`python3 ${path.join(SCH, "models", "render.py")} ${jobsFile}`, { stdio: "inherit", env });
-    fs.unlinkSync(jobsFile);
-  }
-  if (!process.env.FAST) {
-    const used = new Set(slides.flatMap((s) => s.els.filter((e) => e.t === "model").map((e) => path.basename(e.raster))));
-    for (const file of fs.readdirSync(rasterDir)) {
-      if (file.endsWith(".png") && !used.has(file)) fs.unlinkSync(path.join(rasterDir, file));
-    }
-  }
-}
+  const missing = [...keys].filter((key) => !fs.existsSync(path.join(MODELS, "glb", `${key}.glb`)));
+  if (missing.length) execSync(`python3 ${path.join(MODELS, "make_models.py")} ${missing.join(" ")}`, { stdio: "inherit", env });
 
-// ---------- deliverables ----------
-async function main() {
-  fs.mkdirSync(OUT, { recursive: true });
-  prepareModels();
-  const pptxgen = req("pptxgenjs");
-  const JSZip = req("jszip");
-  const pres = new pptxgen();
-  pres.layout = "LAYOUT_WIDE";
-  pres.author = "Arena Agent";
-  pres.title = "Каштан в корзине — психология импульсивных трат";
-  pres.subject = "Учебный проект об импульсивных покупках, BNPL и финансовом поведении студентов";
-  pres.company = "";
-  toPptx(pres, slides);
-  const buf = await pres.write({ outputType: "nodebuffer" });
-  const zip = await JSZip.loadAsync(buf);
-  await injectModels(zip, slides, path.join(MODELS, "glb"));
-  await injectTiming(zip, slides);
-  await dedupeMedia(zip);
-  const output = path.join(OUT, "impulse-spending-3d.pptx");
-  fs.writeFileSync(output, await zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE", compressionOptions: { level: 9 } }));
-  console.log("wrote", output, (fs.statSync(output).size / 1e6).toFixed(1) + " MB", slides.length, "slides");
-  writeScript();
-  writeSources();
-  if (process.argv.includes("--preview")) await preview();
+  const jobs = [];
+  fs.mkdirSync(path.join(MODELS, "rasters"), { recursive: true });
+  let id = 0;
+  for (const s of slides) for (const e of s.els) {
+    if (e.t !== "model") continue;
+    e.id = `m${++id}`;
+    const px = process.env.FAST ? Math.round((e.px || 820) / 3) : (e.px || 820);
+    const data = fs.readFileSync(path.join(MODELS, "glb", `${e.key}.glb`));
+    const hash = crypto.createHash("md5").update(data).update(JSON.stringify([e.rot, px, 3])).digest("hex").slice(0, 10);
+    e.raster = path.join(MODELS, "rasters", `${e.key}-${hash}.png`);
+    if (!fs.existsSync(e.raster) && !jobs.some((job) => job.out === e.raster))
+      jobs.push({ key: e.key, rot: e.rot, px, out: e.raster });
+  }
+  if (jobs.length) {
+    console.log(`Rendering ${jobs.length} chestnut poster raster(s)…`);
+    const list = path.join(MODELS, "rasters", "_jobs.json");
+    fs.writeFileSync(list, JSON.stringify(jobs));
+    execSync(`python3 ${path.join(SCH, "models", "render.py")} ${list}`, { stdio: "inherit", env });
+    fs.unlinkSync(list);
+  }
 }
 
 function writeScript() {
-  let md = "# Текст выступления — «Каштан в корзине»\n\n" +
-    "**Тема:** психология импульсивных трат у студентов. **Формат:** 9 слайдов, учебное предложение исследования; " +
-    "результаты ещё не собраны. В заметках докладчика к каждому слайду лежит тот же текст. " +
-    "В PowerPoint 365 / 2021+ анимации встроенных 3D-моделей запускаются автоматически; в остальных просмотрщиках может отображаться статичный PNG-fallback.\n";
-  slides.forEach((s, i) => { md += `\n## Слайд ${i + 1} — ${slideTitles[i]}\n\n${s.notes.trim()}\n`; });
-  fs.writeFileSync(path.join(OUT, "impulse-spending-presentation-script.md"), md);
+  let md = "# Текст выступления к презентации «Покупка на автопилоте»\n\n" +
+    "**Формат:** учебный проект, 10 слайдов. В заметках каждого слайда находится тот же текст. " +
+    "Результаты опроса не придуманы: выборка N ≥ 50 — цель набора, не собранные ответы.\n";
+  slides.forEach((s, i) => { md += `\n## Слайд ${i + 1} — ${TITLES[i]}\n\n${s.notes.trim()}\n`; });
+  fs.writeFileSync(path.join(ROOT, "exports/impulse-spending-script.md"), md);
 }
 
 function writeSources() {
-  const md = `# Источники и привязка фактов — «Каштан в корзине»
-
-Дата подготовки: 11 октября 2026. Ссылки и формулировки отделяют опубликованные данные от гипотез проекта. В презентации нет выдуманных результатов опроса.
-
-## Использование на слайдах
-
-| № | Слайды | Для чего используется |
-|---|---:|---|
-| [1] | 2, 9 | Оценка транзакций крупнейших российских BNPL-сервисов за 2025 год: 940 млрд ₽ и рост примерно в 2,5 раза к 2024 году. Это отраслевой расчёт/оценка, не официальный подсчёт всех долгов и не просрочка. |
-| [2] | 2, 9 | Дата и правовая рамка Федерального закона № 283-ФЗ: вступил в силу 1 апреля 2026 года (кроме отдельных положений, указанных в законе). |
-| [3] | 3, 9 | Исследования импульсивных покупок: роль нормативной оценки ситуации в связи между склонностью и поведением. |
-| [4] | 3–4, 9 | Определение FOMO и его психологические/поведенческие корреляты; используется как обоснование гипотезы, а не доказательство результатов этого проекта. |
-| [5] | 4, 9 | Исследование социальной оценки/сравнения с инфлюенсерами и импульсивных покупок; обосновывает исследовательский вопрос. |
-| [6] | 4, 9 | Работа об ассоциации финансовой грамотности и импульсивных онлайн-покупок у студенческой выборки; эффект нельзя автоматически переносить на нашу выборку. |
-| [7] | 3, 9 | Концептуализация склонности к импульсивным покупкам и различение эмоционального и когнитивного аспектов. |
-
-## Полные библиографические данные
-
-1. TAdviser. «Сервисы рассрочки (BNPL) в России»: хроника рынка; данные за 2025 год приведены со ссылкой на оценку сервиса «Долями» / публикацию «Ведомостей» от 3 февраля 2026 года. [Статья TAdviser](https://www.tadviser.ru/index.php/%D0%A1%D1%82%D0%B0%D1%82%D1%8C%D1%8F:%D0%A1%D0%B5%D1%80%D0%B2%D0%B8%D1%81%D1%8B_%D1%80%D0%B0%D1%81%D1%81%D1%80%D0%BE%D1%87%D0%BA%D0%B8_(BNPL)_%D0%B2_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8). Дополнительно: [«Ведомости», 03.02.2026](https://www.vedomosti.ru/business/articles/2026/02/03/1173546-rinok-servisov-oplati-pokupok-chastyami-viros).
-2. Федеральный закон от 31.07.2025 № 283-ФЗ «О деятельности по предоставлению сервиса рассрочки». Официальное опубликование правовых актов Российской Федерации, номер публикации 0001202507310014. [Официальный текст](http://publication.pravo.gov.ru/Document/View/0001202507310014).
-3. Rook, D. W., & Fisher, R. J. (1995). Normative Influences on Impulsive Buying Behavior. *Journal of Consumer Research*, 22(3), 305–313. https://doi.org/10.1086/209452.
-4. Przybylski, A. K., Murayama, K., DeHaan, C. R., & Gladwell, V. (2013). Motivational, emotional, and behavioral correlates of fear of missing out. *Computers in Human Behavior*, 29(4), 1841–1848. https://doi.org/10.1016/j.chb.2013.02.014.
-5. Mundel, J., Wan, A., & Yang, J. (2024). Processes underlying social comparison with influencers and subsequent impulsive buying: The roles of social anxiety and social media addiction. *Journal of Marketing Communications*, 30(7), 834–851. https://doi.org/10.1080/13527266.2023.2183426.
-6. Anisa, N. A., Arifin, S., Setyowati, L., Hidayah, N., & Megasari, A. D. (2020). Financial Literacy on Impulsive Buying Behavior in Y Generation. *Quantitative Economics and Management Studies*, 1(1), 70–75. https://doi.org/10.35877/454RI.qems80. Использовать как один частный эмпирический пример, не как универсальный закон.
-7. Verplanken, B., & Herabadi, A. (2001). Individual differences in impulse buying tendency: feeling and no thinking. *European Journal of Personality*, 15(S1), S71–S83. https://doi.org/10.1002/per.423.
-
-## Этические и методологические оговорки
-
-- N ≥ 50 — плановый минимальный объём учебного разведочного опроса, а не гарантия репрезентативности.
-- До сбора данных нужно сообщить участникам цель опроса, сделать участие добровольным и не собирать идентификаторы без необходимости.
-- Корреляции в одноразовом самоотчётном опросе не доказывают причинность; слайды 4, 6 и 8 это прямо оговаривают.
-- Практические шаги на слайде 7 — предложенные пользователю инструменты паузы, а не доказанное лечение или универсальная рекомендация.
-`;
-  fs.writeFileSync(path.join(OUT, "impulse-spending-sources.md"), md);
+  const mapping = [
+    [1, "Объект проекта и мемы — из исходного файла; это не эмпирические данные."],
+    [2, "Платёжный сценарий и связь оплаты с поведением: [4]. Рыночные цифры BNPL из черновика не перенесены без проверенного первоисточника."],
+    [3, "Рабочее определение импульсивной покупки: [1], [2]. Пересказ, не дословная цитата."],
+    [4, "Триггер — желание — сопротивление/действие: концептуальная схема по [3]; показана как упрощённая модель, не универсальный закон."],
+    [5, "Дефицит: [5]; социальное влияние: [6]; FoMO: [7]; платёжный механизм: [4]; фрейминг: [8]. Эти работы обосновывают темы вопросов, но не доказывают гипотезы на нашей выборке."],
+    [6, "Целевая аудитория, вопрос, план N ≥ 50 и этика — собственный план учебного исследования; данные ещё не собраны."],
+    [7, "H1–H3 — гипотезы собственного проекта; будущий поперечный опрос может показать связь, но не причинность."],
+    [8, "Этапы — план выполнения собственного проекта. Изображение банков сбережений сохранено из оригинальной презентации как мем."],
+    [9, "Пауза, проверка бюджета и добавление трения — предложения памятки, не обещание гарантированного эффекта."],
+    [10, "Собственный вывод проекта сформулирован как предложение. Библиографические записи [1]–[8] приведены ниже."],
+  ];
+  let md = "# Источники и проверка фактов — «Покупка на автопилоте»\n\n" +
+    "## Что важно не перепутать\n\n" +
+    "- Опрос пока не проведён. N ≥ 50 — план набора, не реальное число участников.\n" +
+    "- Ни одна гипотеза H1–H3 не представлена как подтверждённый результат.\n" +
+    "- Поскольку исследование планируется как поперечное, результаты будут говорить о связях, а не о причинности.\n" +
+    "- Цифры о BNPL и ФЗ из исходника не перенесены: к ним не приложен проверяемый первоисточник. Тема оплаты частями оставлена как возможная переменная анкеты.\n" +
+    "- Мемы и фотография каштанов сохранены из пользовательского файла `ekonomika123.pptx`. Мем — визуальная иллюстрация, не источник факта.\n\n" +
+    "## Источники по слайдам\n\n| Слайд | Основание утверждений / статус |\n|---:|---|\n" +
+    mapping.map(([i, note]) => `| ${i} | ${note} |`).join("\n") + "\n\n## Библиография\n\n" +
+    Object.entries(REF).map(([n, citation]) => `[${n}] ${citation}`).join("\n\n") + "\n\n" +
+    "## Исходные изображения\n\n" +
+    "Фото каштанов и мемы взяты из пользовательского исходника `ekonomika123.pptx` и перенесены в `presentations/impulse/assets/` для воспроизводимой сборки. Авторские права на исходные мемы не устанавливаются этим проектом.\n";
+  fs.writeFileSync(path.join(ROOT, "exports/impulse-spending-sources.md"), md);
 }
 
 async function preview() {
   const fontsDir = path.join(SCH, "node_modules/@fontsource");
-  const pages = toHtml(slides, path.join(__dirname, "assets"), fontsDir);
-  const outDir = path.join(__dirname, "preview");
+  const pages = toHtml(slides, path.join(HERE, "assets"), fontsDir);
+  const outDir = path.join(HERE, "preview");
   fs.mkdirSync(outDir, { recursive: true });
   const chromiumMod = req("@sparticuz/chromium");
   const chromium = chromiumMod.default || chromiumMod;
@@ -487,13 +479,15 @@ async function preview() {
   if (!fs.existsSync("/tmp/al/lib/libnspr4.so")) {
     const zlib = require("zlib");
     fs.mkdirSync("/tmp/al", { recursive: true });
-    const brf = req.resolve("@sparticuz/chromium").replace(/build\/.*$/, "bin/al2023.tar.br");
-    fs.writeFileSync("/tmp/al/al.tar", zlib.brotliDecompressSync(fs.readFileSync(brf)));
+    const archive = req.resolve("@sparticuz/chromium").replace(/build\/.*$/, "bin/al2023.tar.br");
+    fs.writeFileSync("/tmp/al/al.tar", zlib.brotliDecompressSync(fs.readFileSync(archive)));
     execSync("tar xf al.tar", { cwd: "/tmp/al" });
   }
-  process.env.LD_LIBRARY_PATH = (process.env.LD_LIBRARY_PATH || "") + ":/tmp/al/lib";
-  const browser = await puppeteer.launch({ args: [...chromium.args, "--allow-file-access-from-files"],
-    executablePath: await chromium.executablePath(), headless: true });
+  process.env.LD_LIBRARY_PATH = [process.env.LD_LIBRARY_PATH || "", "/tmp/al/lib"].filter(Boolean).join(":");
+  const browser = await puppeteer.launch({
+    args: [...chromium.args, "--allow-file-access-from-files"],
+    executablePath: await chromium.executablePath(), headless: true,
+  });
   const page = await browser.newPage();
   await page.setViewport({ width: 1920, height: 1080 });
   const only = process.argv.find((arg) => arg.startsWith("--only="));
@@ -502,13 +496,37 @@ async function preview() {
     if (wanted && !wanted.includes(i + 1)) continue;
     const html = path.join(outDir, `slide-${String(i + 1).padStart(2, "0")}.html`);
     fs.writeFileSync(html, pages[i]);
-    await page.goto("file://" + html, { waitUntil: "networkidle0" });
+    await page.goto(`file://${html}`, { waitUntil: "networkidle0" });
     await page.evaluate(() => document.fonts.ready);
-    await page.screenshot({ path: html.replace(".html", ".png") });
+    await page.screenshot({ path: html.replace(/\.html$/, ".png") });
     fs.unlinkSync(html);
   }
   await browser.close();
-  console.log("previews ->", outDir);
+  console.log("PNG previews ->", outDir);
+}
+
+async function main() {
+  prepareModels();
+  const pptxgen = req("pptxgenjs");
+  const JSZip = req("jszip");
+  const pres = new pptxgen();
+  pres.layout = "LAYOUT_WIDE";
+  pres.author = "MyWorkAiBrain — учебный проект";
+  pres.subject = "Психология импульсивных трат; исходный мем-стиль и каштан сохранены";
+  pres.title = "Покупка на автопилоте — психология импульсивных трат";
+  pres.company = "MyWorkAiBrain";
+  toPptx(pres, slides);
+  const buffer = await pres.write({ outputType: "nodebuffer" });
+  const zip = await JSZip.loadAsync(buffer);
+  await injectModels(zip, slides, path.join(MODELS, "glb"));
+  await injectTiming(zip, slides);
+  await dedupeMedia(zip);
+  const output = path.join(ROOT, "ekonomika123.pptx");
+  fs.writeFileSync(output, await zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE", compressionOptions: { level: 9 } }));
+  console.log(`Wrote ${output} (${(fs.statSync(output).size / 1e6).toFixed(2)} MB), ${slides.length} slides`);
+  writeScript();
+  writeSources();
+  if (process.argv.includes("--preview")) await preview();
 }
 
 main().catch((error) => { console.error(error); process.exit(1); });

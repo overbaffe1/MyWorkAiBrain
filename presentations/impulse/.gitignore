@@ -1,4 +1,5 @@
-preview/
-models/_look/
-models/_anim/
+node_modules/
+preview/*.html
+preview/.animation-frames/
 models/rasters/_jobs.json
+models/_anim/
