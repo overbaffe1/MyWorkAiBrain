@@ -1,0 +1,6 @@
+node_modules/
+preview/
+models/_look/
+models/_anim/
+models/rasters/*.png
+models/rasters/_jobs.json
