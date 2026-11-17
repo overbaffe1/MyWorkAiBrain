@@ -64,6 +64,14 @@ PALETTE_CSS = """
     --mesh-edge: #3D262B;
     --mesh-rib: rgba(61, 38, 43, 0.22);
     --ghost: rgba(109, 40, 217, 0.22);
+    --crys-tl: #E3B663;
+    --crys-tr: #C2882E;
+    --crys-bl: rgba(124, 58, 237, 0.84);
+    --crys-br: rgba(91, 33, 182, 0.92);
+    --crys-st-top: #8B5A19;
+    --crys-st-bot: #4C1D95;
+    --crys-glow: #E3B663;
+    --crys-node: #FFFBEB;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -93,6 +101,14 @@ PALETTE_CSS = """
       --mesh-edge: #E8C378;
       --mesh-rib: rgba(232, 195, 120, 0.20);
       --ghost: rgba(180, 142, 255, 0.30);
+      --crys-tl: rgba(232, 194, 122, 0.90);
+      --crys-tr: rgba(185, 128, 44, 0.92);
+      --crys-bl: rgba(109, 55, 184, 0.82);
+      --crys-br: rgba(70, 32, 125, 0.88);
+      --crys-st-top: #FFF3D1;
+      --crys-st-bot: #C4B5FD;
+      --crys-glow: #FFE4A3;
+      --crys-node: #FFF7E0;
     }
   }
 """
@@ -626,11 +642,68 @@ def build_technical_plates(projector):
 
 
 # ---------------------------------------------------------------------------
-# 5. Adaptive Hero Cover Suite (`stage-cover*.svg`)
+# 5. Rotating Astrolabe & Gold-Violet 3D Crystal + Adaptive Hero Cover Suite
 # ---------------------------------------------------------------------------
+def crystal_astrolabe_markup(animated: bool) -> str:
+    """The beloved rotating astrolabe & 3D rigged gold/violet crystal (centered at 0,0, radius ~96)."""
+    rot_outer = '<animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="38s" repeatCount="indefinite"/>' if animated else ""
+    rot_inner = '<animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="26s" repeatCount="indefinite"/>' if animated else ""
+    rot_moons = '<animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="14s" repeatCount="indefinite"/>' if animated else ""
+    glow_anim = (
+        '<animate attributeName="r" values="36;45;36" dur="3.2s" repeatCount="indefinite"/>'
+        '<animate attributeName="opacity" values="0.72;1;0.72" dur="3.2s" repeatCount="indefinite"/>'
+    ) if animated else ""
+    bob_anim = '<animateTransform attributeName="transform" type="translate" values="0,4; 0,-6; 0,4" dur="4.4s" repeatCount="indefinite"/>' if animated else ""
+
+    # Smooth 3D rotation of the central ridge & side vertices so the crystal visibly turns in 3D!
+    if animated:
+        f_tl = '<animate attributeName="points" values="0,-52 -38,-4 -13,11; 0,-52 -34,-4 13,11; 0,-52 -38,-4 -13,11" dur="6.4s" repeatCount="indefinite"/>'
+        f_tr = '<animate attributeName="points" values="0,-52 34,-4 -13,11; 0,-52 38,-4 13,11; 0,-52 34,-4 -13,11" dur="6.4s" repeatCount="indefinite"/>'
+        f_bl = '<animate attributeName="points" values="-38,-4 -13,11 0,54; -34,-4 13,11 0,54; -38,-4 -13,11 0,54" dur="6.4s" repeatCount="indefinite"/>'
+        f_br = '<animate attributeName="points" values="34,-4 -13,11 0,54; 38,-4 13,11 0,54; 34,-4 -13,11 0,54" dur="6.4s" repeatCount="indefinite"/>'
+        n_mid = '<animate attributeName="cx" values="-13;13;-13" dur="6.4s" repeatCount="indefinite"/>'
+        n_l = '<animate attributeName="cx" values="-38;-34;-38" dur="6.4s" repeatCount="indefinite"/>'
+        n_r = '<animate attributeName="cx" values="34;38;34" dur="6.4s" repeatCount="indefinite"/>'
+    else:
+        f_tl = f_tr = f_bl = f_br = n_mid = n_l = n_r = ""
+
+    return f"""
+      <circle r="96" fill="none" stroke="var(--brass)" stroke-opacity="0.18" stroke-width="1"/>
+      <g>
+        {rot_outer}
+        <circle r="80" fill="none" stroke="var(--brass)" stroke-opacity="0.40" stroke-width="1.25" stroke-dasharray="5 7"/>
+      </g>
+      <g>
+        {rot_inner}
+        <circle r="60" fill="none" stroke="var(--violet)" stroke-opacity="0.38" stroke-width="1.25" stroke-dasharray="18 8 3 8"/>
+      </g>
+      <ellipse rx="74" ry="22" fill="none" stroke="var(--brass)" stroke-opacity="0.32" stroke-width="1.1" transform="rotate(-18)"/>
+      <g>
+        {rot_moons}
+        <circle cx="80" cy="0" r="3.2" fill="var(--brass-hi)"/>
+        <circle cx="-60" cy="0" r="2.7" fill="var(--violet-hi)"/>
+      </g>
+      <circle cx="0" cy="0" r="40" fill="url(#coreGlow)">
+        {glow_anim}
+      </circle>
+      <g>
+        {bob_anim}
+        <polygon points="0,-52 -36,-4 0,11" fill="var(--crys-tl)" stroke="var(--crys-st-top)" stroke-width="1.05">{f_tl}</polygon>
+        <polygon points="0,-52 36,-4 0,11" fill="var(--crys-tr)" stroke="var(--crys-st-top)" stroke-width="1.05">{f_tr}</polygon>
+        <polygon points="-36,-4 0,11 0,54" fill="var(--crys-bl)" stroke="var(--crys-st-bot)" stroke-width="1.05">{f_bl}</polygon>
+        <polygon points="36,-4 0,11 0,54" fill="var(--crys-br)" stroke="var(--crys-st-bot)" stroke-width="1.05">{f_br}</polygon>
+        <circle cx="0" cy="-52" r="3.1" fill="var(--crys-node)"/>
+        <circle cx="-36" cy="-4" r="2.7" fill="var(--brass-hi)">{n_l}</circle>
+        <circle cx="36" cy="-4" r="2.7" fill="var(--brass-hi)">{n_r}</circle>
+        <circle cx="0" cy="11" r="3.3" fill="var(--crys-node)">{n_mid}</circle>
+        <circle cx="0" cy="54" r="2.9" fill="var(--violet-hi)"/>
+      </g>
+"""
+
+
 def build_stage_covers(projector):
-    # Project real ship onto right half of 1280x500 stage!
-    sil, crease, sea, bones = projector(cx=985.0, cy_px=252.0, scale_px=420.0, crease_deg=26.0)
+    # Project real ship onto right stage, leaving celestial space at (796, 146) for the Rotating Crystal Astrolabe!
+    sil, crease, sea, bones = projector(cx=1064.0, cy_px=274.0, scale_px=378.0, crease_deg=26.0)
     sil_d = segs_to_path(sil)
     crease_d = segs_to_path(crease)
     sea_d = segs_to_path(sea)
@@ -641,8 +714,8 @@ def build_stage_covers(projector):
             x, y = b["xy"]
             col = "var(--brass-hi)" if b["name"] in ("root", "hull") else "var(--violet-hi)"
             joint_sparks.append(
-                f'<circle cx="{x:.1f}" cy="{y:.1f}" r="5.5" fill="{col}" opacity="0.20"/>'
-                f'<circle cx="{x:.1f}" cy="{y:.1f}" r="2.2" fill="{col}"/>'
+                f'<circle cx="{x:.1f}" cy="{y:.1f}" r="5.2" fill="{col}" opacity="0.20"/>'
+                f'<circle cx="{x:.1f}" cy="{y:.1f}" r="2.1" fill="{col}"/>'
             )
 
     def wide_svg(animated: bool) -> str:
@@ -651,7 +724,7 @@ def build_stage_covers(projector):
         if animated:
             anim_css = """
     @media (prefers-reduced-motion: no-preference) {
-      .beam-left { animation: swayA 11s ease-in-out infinite alternate; transform-origin: 860px 0px; }
+      .beam-left { animation: swayA 11s ease-in-out infinite alternate; transform-origin: 840px 0px; }
       .beam-right { animation: swayB 13s ease-in-out infinite alternate; transform-origin: 1120px 0px; }
       .ship-rig { animation: floatShip 7.5s ease-in-out infinite; }
       .spark-layer { animation: pulseSparks 4.8s ease-in-out infinite; }
@@ -663,11 +736,10 @@ def build_stage_covers(projector):
 """
             turntable_spin = '<animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="64s" repeatCount="indefinite"/>'
 
-        # Degree tick marks around turntable ring (centered at 0,0, squashed vertically byouter scale(1, 0.30))
         ticks = []
         for deg in range(0, 360, 10):
-            r0 = 236 if deg % 30 == 0 else 242
-            r1 = 250
+            r0 = 216 if deg % 30 == 0 else 222
+            r1 = 230
             rad = math.radians(deg)
             x0, y0 = r0 * math.cos(rad), r0 * math.sin(rad)
             x1, y1 = r1 * math.cos(rad), r1 * math.sin(rad)
@@ -687,11 +759,11 @@ def build_stage_covers(projector):
     </linearGradient>
     <linearGradient id="leftVeil" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0%" stop-color="var(--veil-0)"/>
-      <stop offset="68%" stop-color="var(--veil-1)"/>
+      <stop offset="76%" stop-color="var(--veil-1)"/>
       <stop offset="100%" stop-color="var(--veil-2)"/>
     </linearGradient>
     <linearGradient id="spotGold" x1="0.5" y1="0" x2="0.5" y2="1">
-      <stop offset="0%" stop-color="var(--brass-hi)" stop-opacity="0.26"/>
+      <stop offset="0%" stop-color="var(--brass-hi)" stop-opacity="0.25"/>
       <stop offset="100%" stop-color="var(--brass-hi)" stop-opacity="0"/>
     </linearGradient>
     <linearGradient id="spotViolet" x1="0.5" y1="0" x2="0.5" y2="1">
@@ -703,6 +775,11 @@ def build_stage_covers(projector):
       <stop offset="65%" stop-color="var(--violet)" stop-opacity="0.08"/>
       <stop offset="100%" stop-color="var(--bg)" stop-opacity="0"/>
     </radialGradient>
+    <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="var(--crys-glow)" stop-opacity="0.72"/>
+      <stop offset="52%" stop-color="var(--brass)" stop-opacity="0.26"/>
+      <stop offset="100%" stop-color="var(--brass)" stop-opacity="0"/>
+    </radialGradient>
     <clipPath id="stageClip">
       <rect width="1280" height="500" rx="18"/>
     </clipPath>
@@ -713,36 +790,36 @@ def build_stage_covers(projector):
 
     <!-- Perspective theatrical stage floor horizon & rays -->
     <g opacity="0.55">
-      <line x1="620" y1="360" x2="1280" y2="360" stroke="var(--line-strong)" stroke-width="0.9"/>
-      <line x1="660" y1="418" x2="1280" y2="418" stroke="var(--line)" stroke-width="0.7" stroke-dasharray="3 6"/>
-      <path d="M985,360 L690,500 M985,360 L835,500 M985,360 L985,500 M985,360 L1135,500 M985,360 L1275,500" stroke="var(--line)" stroke-width="0.75"/>
+      <line x1="620" y1="364" x2="1280" y2="364" stroke="var(--line-strong)" stroke-width="0.9"/>
+      <line x1="660" y1="422" x2="1280" y2="422" stroke="var(--line)" stroke-width="0.7" stroke-dasharray="3 6"/>
+      <path d="M1045,364 L720,500 M1045,364 L880,500 M1045,364 L1045,500 M1045,364 L1175,500 M1045,364 L1278,500" stroke="var(--line)" stroke-width="0.75"/>
     </g>
 
     <!-- Volumetric proscenium spotlight cones -->
-    <polygon class="beam-left" points="820,0 910,0 1165,455 745,455" fill="url(#spotGold)"/>
-    <polygon class="beam-right" points="1085,0 1165,0 1195,455 815,455" fill="url(#spotViolet)"/>
+    <polygon class="beam-left" points="865,0 950,0 1205,460 805,460" fill="url(#spotGold)"/>
+    <polygon class="beam-right" points="1105,0 1185,0 1235,460 865,460" fill="url(#spotViolet)"/>
 
     <!-- Off-stage Morph ghost portals (!!m-prev / !!m-next) -->
-    <g opacity="0.42" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9.5" fill="var(--muted)">
-      <ellipse cx="735" cy="390" rx="46" ry="13" fill="none" stroke="var(--violet)" stroke-width="1" stroke-dasharray="3 4"/>
-      <text x="735" y="415" text-anchor="middle">!!ship · -80°</text>
-      <ellipse cx="1218" cy="390" rx="42" ry="12" fill="none" stroke="var(--brass)" stroke-width="1" stroke-dasharray="3 4"/>
-      <text x="1212" y="415" text-anchor="middle">!!next · +80°</text>
+    <g opacity="0.44" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9.5" fill="var(--muted)">
+      <ellipse cx="766" cy="396" rx="44" ry="12" fill="none" stroke="var(--violet)" stroke-width="1" stroke-dasharray="3 4"/>
+      <text x="766" y="420" text-anchor="middle">!!crystal · Morph</text>
+      <ellipse cx="1224" cy="396" rx="38" ry="11" fill="none" stroke="var(--brass)" stroke-width="1" stroke-dasharray="3 4"/>
+      <text x="1218" y="420" text-anchor="middle">!!next · +80°</text>
     </g>
 
-    <!-- Stage floor turntable dial (safe nested <g>: outer positions & squashes, inner rotates!) -->
-    <ellipse cx="985" cy="382" rx="275" ry="82" fill="url(#stagePool)"/>
-    <g transform="translate(985, 382) scale(1, 0.30)">
+    <!-- Stage floor turntable dial under the Brigantine -->
+    <ellipse cx="1048" cy="390" rx="245" ry="74" fill="url(#stagePool)"/>
+    <g transform="translate(1048, 390) scale(1, 0.30)">
       <g>
-        <circle cx="0" cy="0" r="252" fill="none" stroke="var(--brass)" stroke-width="1.6" opacity="0.65"/>
-        <circle cx="0" cy="0" r="218" fill="none" stroke="var(--violet)" stroke-width="1.1" stroke-dasharray="8 8" opacity="0.55"/>
-        <circle cx="0" cy="0" r="168" fill="none" stroke="var(--line-strong)" stroke-width="1"/>
+        <circle cx="0" cy="0" r="232" fill="none" stroke="var(--brass)" stroke-width="1.6" opacity="0.65"/>
+        <circle cx="0" cy="0" r="198" fill="none" stroke="var(--violet)" stroke-width="1.1" stroke-dasharray="8 8" opacity="0.55"/>
+        <circle cx="0" cy="0" r="152" fill="none" stroke="var(--line-strong)" stroke-width="1"/>
         <path d="{ticks_d}" stroke="var(--brass)" stroke-width="1.3" opacity="0.72"/>
         {turntable_spin}
       </g>
     </g>
 
-    <!-- Real projected 3D brigantine `ship.glb` (14,042 tris, 23 bones) -->
+    <!-- EXHIBIT A: Real projected 3D brigantine `ship.glb` (14,042 tris, 23 bones) -->
     <g class="ship-rig">
       <path d="{sea_d}" fill="none" stroke="var(--teal)" stroke-width="0.72" opacity="0.55"/>
       <path d="{crease_d}" fill="none" stroke="var(--mesh-edge)" stroke-width="0.55" opacity="0.42"/>
@@ -750,29 +827,34 @@ def build_stage_covers(projector):
       <g class="spark-layer">{"".join(joint_sparks)}</g>
     </g>
 
-    <!-- Quiet left curtain veil under editorial typography -->
-    <rect x="0" y="0" width="790" height="500" fill="url(#leftVeil)"/>
+    <!-- Quiet left curtain veil under editorial typography (ends cleanly at x=665 so Crystal shines!) -->
+    <rect x="0" y="0" width="665" height="500" fill="url(#leftVeil)"/>
+
+    <!-- EXHIBIT B: Rotating Astrolabe & Gold-Violet 3D Rigged Crystal hovering in celestial arch! -->
+    <g transform="translate(796, 146) scale(0.90)">
+      {crystal_astrolabe_markup(animated)}
+    </g>
 
     <!-- Editorial museum typography -->
     <g>
-      <text x="58" y="68" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" letter-spacing="2.4" fill="var(--brass)">КУНСТКАМЕРА ЖИВОГО 3D · BLENDER 4.3 × OPENXML</text>
-      <line x1="58" y1="84" x2="540" y2="84" stroke="var(--line-strong)" stroke-width="1"/>
+      <text x="54" y="68" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" letter-spacing="2.3" fill="var(--brass)">КУНСТКАМЕРА ЖИВОГО 3D · BLENDER 4.3 × OPENXML</text>
+      <line x1="54" y1="84" x2="520" y2="84" stroke="var(--line-strong)" stroke-width="1"/>
 
-      <text x="56" y="182" font-family="Georgia, 'Times New Roman', serif" font-size="82" font-weight="700" letter-spacing="-1.5" fill="var(--ink)">MyWorkAiBrain</text>
+      <text x="52" y="174" font-family="Georgia, 'Times New Roman', serif" font-size="70" font-weight="700" letter-spacing="-1.4" fill="var(--ink)">MyWorkAiBrain</text>
 
-      <text x="58" y="232" font-family="Georgia, 'Times New Roman', serif" font-size="24" font-style="italic" fill="var(--ink-soft)">Театр трёхмерных презентаций PowerPoint,</text>
-      <text x="58" y="264" font-family="Georgia, 'Times New Roman', serif" font-size="24" font-style="italic" fill="var(--ink-soft)">собранных целиком из кода и единого скелета.</text>
+      <text x="54" y="226" font-family="Georgia, 'Times New Roman', serif" font-size="23" font-style="italic" fill="var(--ink-soft)">Театр трёхмерных презентаций PowerPoint,</text>
+      <text x="54" y="257" font-family="Georgia, 'Times New Roman', serif" font-size="23" font-style="italic" fill="var(--ink-soft)">собранных целиком из кода и единого скелета.</text>
 
-      <text x="58" y="316" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14.5" fill="var(--muted)">Процедурные .glb-модели · PptxGenJS · инъекция a3d:model3D · бесшовный Morph !!</text>
+      <text x="54" y="308" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" fill="var(--muted)">Процедурные .glb-модели · PptxGenJS · инъекция am3d:model3d · бесшовный Morph !!</text>
 
       <!-- Three crisp brass atelier plaques -->
-      <g transform="translate(58, 354)" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">
+      <g transform="translate(54, 348)" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">
         <rect x="0" y="0" width="166" height="58" rx="8" fill="var(--bg-card)" stroke="var(--line-strong)" stroke-width="1"/>
-        <text x="16" y="24" font-size="18" font-weight="700" fill="var(--brass)">5 колод</text>
-        <text x="16" y="44" font-size="10.5" fill="var(--muted)">42 слайда в .pptx</text>
+        <text x="16" y="24" font-size="18" font-weight="700" fill="var(--brass)">4 колоды</text>
+        <text x="16" y="44" font-size="10.5" fill="var(--muted)">29 слайдов в .pptx</text>
 
         <rect x="180" y="0" width="184" height="58" rx="8" fill="var(--bg-card)" stroke="var(--line-strong)" stroke-width="1"/>
-        <text x="196" y="24" font-size="18" font-weight="700" fill="var(--violet)">49 моделей</text>
+        <text x="196" y="24" font-size="18" font-weight="700" fill="var(--violet)">35 моделей</text>
         <text x="196" y="44" font-size="10.5" fill="var(--muted)">до 40 костей в арматуре</text>
 
         <rect x="378" y="0" width="198" height="58" rx="8" fill="var(--bg-card)" stroke="var(--line-strong)" stroke-width="1"/>
@@ -780,7 +862,7 @@ def build_stage_covers(projector):
         <text x="394" y="44" font-size="10.5" fill="var(--muted)">учебник для ИИ и людей</text>
       </g>
 
-      <text x="58" y="458" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10.5" letter-spacing="1.4" fill="var(--muted)">ЭКСПОНАТ НА СЦЕНЕ: CANTILLON / SHIP.GLB · 14 042 ГРАНИ · 23 КОСТИ · РЕАЛЬНАЯ ПРОЕКЦИЯ</text>
+      <text x="54" y="458" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10.2" letter-spacing="1.3" fill="var(--muted)">НА СЦЕНЕ: КРИСТАЛЛ-АСТРОЛЯБИЯ + ПАРУСНИК SHIP.GLB (14 042 Δ · 23 КОСТИ)</text>
     </g>
 
     <!-- Outer museum frame border -->
@@ -789,8 +871,8 @@ def build_stage_covers(projector):
 </svg>
 """
 
-    # Compact mobile cover (760x430)
-    sil_c, crease_c, sea_c, _ = projector(cx=585.0, cy_px=248.0, scale_px=275.0, crease_deg=28.0)
+    # Compact mobile cover (760x430) — also features BOTH the Rotating Crystal AND the Ship!
+    sil_c, crease_c, sea_c, _ = projector(cx=605.0, cy_px=286.0, scale_px=250.0, crease_deg=28.0)
     sil_cd = segs_to_path(sil_c)
     crease_cd = segs_to_path(crease_c)
     sea_cd = segs_to_path(sea_c)
@@ -810,31 +892,39 @@ def build_stage_covers(projector):
       <stop offset="72%" stop-color="var(--veil-1)"/>
       <stop offset="100%" stop-color="var(--veil-2)"/>
     </linearGradient>
+    <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="var(--crys-glow)" stop-opacity="0.72"/>
+      <stop offset="52%" stop-color="var(--brass)" stop-opacity="0.26"/>
+      <stop offset="100%" stop-color="var(--brass)" stop-opacity="0"/>
+    </radialGradient>
   </defs>
   <rect width="760" height="430" rx="16" fill="var(--bg)"/>
-  <g class="ship-c" opacity="0.72">
+  <g class="ship-c" opacity="0.78">
     <path d="{sea_cd}" fill="none" stroke="var(--teal)" stroke-width="0.65"/>
     <path d="{crease_cd}" fill="none" stroke="var(--mesh-edge)" stroke-width="0.5" opacity="0.4"/>
     <path d="{sil_cd}" fill="none" stroke="var(--mesh-edge)" stroke-width="1.05"/>
   </g>
-  <rect width="600" height="430" rx="16" fill="url(#veilC)"/>
+  <rect width="545" height="430" rx="16" fill="url(#veilC)"/>
+  <g transform="translate(642, 108) scale(0.68)">
+    {crystal_astrolabe_markup(animated)}
+  </g>
   <rect x="10" y="10" width="740" height="410" rx="11" fill="none" stroke="var(--line-strong)" stroke-width="1"/>
   <text x="38" y="56" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10.5" letter-spacing="2" fill="var(--brass)">КУНСТКАМЕРА ЖИВОГО 3D · GLB × PPTX</text>
-  <text x="36" y="138" font-family="Georgia, 'Times New Roman', serif" font-size="56" font-weight="700" fill="var(--ink)">MyWorkAiBrain</text>
-  <text x="38" y="182" font-family="Georgia, 'Times New Roman', serif" font-size="20" font-style="italic" fill="var(--ink-soft)">Живые 3D-презентации PowerPoint,</text>
-  <text x="38" y="210" font-family="Georgia, 'Times New Roman', serif" font-size="20" font-style="italic" fill="var(--ink-soft)">собранные целиком из кода.</text>
+  <text x="36" y="136" font-family="Georgia, 'Times New Roman', serif" font-size="54" font-weight="700" fill="var(--ink)">MyWorkAiBrain</text>
+  <text x="38" y="180" font-family="Georgia, 'Times New Roman', serif" font-size="20" font-style="italic" fill="var(--ink-soft)">Живые 3D-презентации PowerPoint,</text>
+  <text x="38" y="208" font-family="Georgia, 'Times New Roman', serif" font-size="20" font-style="italic" fill="var(--ink-soft)">собранные целиком из кода.</text>
   <g transform="translate(38, 256)" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">
     <rect x="0" y="0" width="145" height="54" rx="7" fill="var(--bg-card)" stroke="var(--line-strong)"/>
-    <text x="14" y="23" font-size="16" font-weight="700" fill="var(--brass)">5 колод</text>
-    <text x="14" y="41" font-size="10" fill="var(--muted)">готовые .pptx</text>
+    <text x="14" y="23" font-size="16" font-weight="700" fill="var(--brass)">4 колоды</text>
+    <text x="14" y="41" font-size="10" fill="var(--muted)">29 слайдов .pptx</text>
     <rect x="158" y="0" width="165" height="54" rx="7" fill="var(--bg-card)" stroke="var(--line-strong)"/>
-    <text x="172" y="23" font-size="16" font-weight="700" fill="var(--violet)">49 моделей</text>
+    <text x="172" y="23" font-size="16" font-weight="700" fill="var(--violet)">35 моделей</text>
     <text x="172" y="41" font-size="10" fill="var(--muted)">единый скелет glTF</text>
     <rect x="336" y="0" width="155" height="54" rx="7" fill="var(--bg-card)" stroke="var(--line-strong)"/>
     <text x="350" y="23" font-size="16" font-weight="700" fill="var(--ink)">6 глав</text>
     <text x="350" y="41" font-size="10" fill="var(--muted)">курс train-ai/</text>
   </g>
-  <text x="38" y="388" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" letter-spacing="1.2" fill="var(--muted)">BLENDER 4.3 · PPTXGENJS · A3D:MODEL3D · MORPH !!</text>
+  <text x="38" y="388" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" letter-spacing="1.2" fill="var(--muted)">BLENDER 4.3 · PPTXGENJS · AM3D:MODEL3D · MORPH !!</text>
 </svg>
 """
 
@@ -877,7 +967,7 @@ def build_seals():
         ),
         (
             "seal-scenes.svg",
-            "ПРИМЕРЫ ПРЕЗЕНТАЦИЙ · 5 ПРОЕКТОВ · 49 МОДЕЛЕЙ GLB ·",
+            "ПРИМЕРЫ ПРЕЗЕНТАЦИЙ · 4 ПРОЕКТА · 35 МОДЕЛЕЙ GLB ·",
             "Примеры сцен",
             "presentations/",
             "var(--teal)",
@@ -891,7 +981,7 @@ def build_seals():
         ),
         (
             "seal-exports.svg",
-            "ПРИМЕРЫ ЭКСПОРТА · 5 ГОТОВЫХ КОЛОД PPTX · СЦЕНАРИИ ·",
+            "ПРИМЕРЫ ЭКСПОРТА · 4 ГОТОВЫЕ КОЛОДЫ PPTX · СЦЕНАРИИ ·",
             "Примеры экспорта",
             "exports/",
             "var(--crimson)",
@@ -1138,13 +1228,12 @@ def build_repo_fingerprint():
             files.append((rel, p.stat().st_size))
 
     groups = [
-        ("exports", "exports/ (.pptx + превью)", "var(--crimson)", (168, 174)),
-        ("cantillon", "cantillon/ (10 сл.)", "var(--brass)", (395, 128)),
-        ("schumpeter", "schumpeter/ (15 сл.)", "var(--violet)", (592, 130)),
-        ("impulse", "impulse/ (13 сл.)", "var(--teal)", (782, 130)),
-        ("wow", "wow/ (3 чуда)", "var(--brass-hi)", (478, 252)),
-        ("fun", "fun/ (вулкан)", "var(--crimson)", (658, 254)),
-        ("docs", "train-ai/ · tools · SVG", "var(--ink-soft)", (858, 254)),
+        ("exports", "exports/ (.pptx + превью)", "var(--crimson)", (176, 182)),
+        ("cantillon", "cantillon/ (10 сл.)", "var(--brass)", (430, 146)),
+        ("schumpeter", "schumpeter/ (15 сл.)", "var(--violet)", (670, 148)),
+        ("wow", "wow/ (3 чуда)", "var(--teal)", (440, 268)),
+        ("fun", "fun/ (вулкан)", "var(--crimson)", (635, 270)),
+        ("docs", "train-ai/ · tools · SVG", "var(--ink-soft)", (842, 212)),
     ]
 
     bucket: Dict[str, List[Tuple[str, int]]] = {g[0]: [] for g in groups}
@@ -1155,8 +1244,6 @@ def build_repo_fingerprint():
             bucket["cantillon"].append((rel, sz))
         elif rel.startswith("presentations/schumpeter/"):
             bucket["schumpeter"].append((rel, sz))
-        elif rel.startswith("presentations/impulse/"):
-            bucket["impulse"].append((rel, sz))
         elif rel.startswith("presentations/wow/"):
             bucket["wow"].append((rel, sz))
         elif rel.startswith("presentations/fun/"):
@@ -1195,11 +1282,11 @@ def build_repo_fingerprint():
   <rect width="980" height="396" rx="14" fill="var(--bg)"/>
   <rect x="10" y="10" width="960" height="376" rx="10" fill="none" stroke="var(--line-strong)" stroke-width="1"/>
   <text x="32" y="38" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10.5" letter-spacing="1.8" fill="var(--brass)">АНАТОМИЧЕСКИЙ ОТПЕЧАТОК РЕПОЗИТОРИЯ · 1 КРУГ = 1 ФАЙЛ (НАВЕДИТЕ КУРСОР)</text>
-  <text x="948" y="38" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10.5" fill="var(--ink-soft)">{total_files} ФАЙЛОВ · {total_mb:.1f} МБ · 49 МОДЕЛЕЙ .GLB</text>
+  <text x="948" y="38" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10.5" fill="var(--ink-soft)">{total_files} ФАЙЛОВ · {total_mb:.1f} МБ · 35 МОДЕЛЕЙ .GLB</text>
   <line x1="32" y1="50" x2="948" y2="50" stroke="var(--line)" stroke-width="0.8"/>
   <g>{"".join(circles_svg)}</g>
   <line x1="32" y1="344" x2="948" y2="344" stroke="var(--line)" stroke-width="0.7"/>
-  <text x="32" y="368" font-family="Georgia, 'Times New Roman', serif" font-size="12.5" font-style="italic" fill="var(--muted)">Плотные ядра внутри кластеров — бинарные модели .glb и рендеры Cycles; крупные сферы слева — пять готовых .pptx.</text>
+  <text x="32" y="368" font-family="Georgia, 'Times New Roman', serif" font-size="12.5" font-style="italic" fill="var(--muted)">Плотные ядра внутри кластеров — бинарные модели .glb и рендеры Cycles; крупные сферы слева — четыре готовых .pptx.</text>
 </svg>
 """
 
@@ -1236,7 +1323,6 @@ def build_repo_fingerprint():
 # ---------------------------------------------------------------------------
 def build_still_frames_and_colophon(projector):
     gif_pairs = [
-        (ROOT / "exports" / "impulse-animations-preview.gif", ASSETS / "impulse-anim-still.png"),
         (ROOT / "presentations" / "fun" / "preview" / "volcano.gif", ASSETS / "volcano-still.png"),
         (ROOT / "presentations" / "fun" / "preview" / "lavapool.gif", ASSETS / "lavapool-still.png"),
         (ROOT / "presentations" / "fun" / "preview" / "torch.gif", ASSETS / "torch-still.png"),
@@ -1324,8 +1410,8 @@ def build_still_frames_and_colophon(projector):
     draw.text((68, 304), "собранные из кода и единого скелета.", font=f_sub, fill=(203, 186, 184, 255))
 
     cards = [
-        ("5 колод .pptx", "42 слайда + скрипты", (230, 188, 106, 255)),
-        ("49 моделей", "до 40 костей в glTF", (180, 142, 255, 255)),
+        ("4 колоды .pptx", "29 слайдов + скрипты", (230, 188, 106, 255)),
+        ("35 моделей", "до 40 костей в glTF", (180, 142, 255, 255)),
         ("train-ai/", "учебник в 6 главах", (87, 209, 196, 255)),
     ]
     cx0 = 68

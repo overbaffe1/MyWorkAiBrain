@@ -26,7 +26,7 @@
 Репозиторий решает сразу две задачи:
 
 1. **Учебник и плейбук для ИИ-агентов** ([`AGENTS.md`](AGENTS.md) + курс из 6 глав в [`train-ai/`](train-ai/)), по которому агент с первой попытки собирает валидный `.pptx` с живыми крутящимися и самодвижущимися `.glb`-моделями, не спотыкаясь о закрытые тонкости движка PowerPoint.
-2. **Эталонная коллекция из 5 готовых спектаклей** ([«Примеры презентаций»](presentations/) в коде и [«Примеры экспорта»](exports/) в виде собранных `.pptx`, превью и текстов выступлений) — **42 слайда** и **49 трёхмерных моделей**, созданных процедурно на Python в Blender без единого стороннего ассета.
+2. **Эталонная коллекция из 4 готовых спектаклей** ([«Примеры презентаций»](presentations/) в коде и [«Примеры экспорта»](exports/) в виде собранных `.pptx`, превью и текстов выступлений) — **29 слайдов** и **35 трёхмерных моделей**, созданных процедурно на Python в Blender без единого стороннего ассета.
 
 ```diff
 - Плоский слайд: статичный PNG на фоне шаблона и ручная расстановка фигур мышью
@@ -1363,33 +1363,29 @@ endsolid myworkaibrain_armillary
 
 ---
 
-## Примеры экспорта и Примеры презентаций · пять спектаклей
+## Примеры экспорта и Примеры презентаций · четыре спектакля
 
-В репозитории пять завершённых работ разного жанра — от музейной кунсткамеры XVIII века и проектного исследования импульсивных покупок до однослайдовой вулканической диорамы.
+В репозитории четыре завершённые работы разного масштаба — от исторических музейных кунсткамер XVIII–XX веков и концентрированного шоурила из трёх сложных сцен до живой вулканической диорамы на одном слайде.
 
-- Папка **[`exports/`](exports/)** (*«Примеры экспорта»*) хранит готовые к показу `.pptx`, контакт-листы, таблицы источников и полные речи докладчика.
+- Папка **[`exports/`](exports/)** (*«Примеры экспорта»*) хранит готовые к показу `.pptx`, контакт-листы и полные речи докладчика.
 - Папка **[`presentations/`](presentations/)** (*«Примеры презентаций»*) хранит весь порождающий код: генераторы геометрии `make_models.py`, сборщики слайдов `build.js`, рендеры и исходные `.glb`.
 
 | Спектакль | Слайдов · Моделей | Примеры экспорта (`.pptx` + речь) | Примеры презентаций (код) | Ключевые 3D-экспонаты и приёмы |
 | :--- | :---: | :--- | :--- | :--- |
-| **Психология импульсивных трат** | `13` · `14 .glb` | [`.pptx` (11 МБ)](exports/impulse-3d-presentation.pptx) · [скрипт](exports/impulse-presentation-script.md) · [источники](exports/impulse-presentation-sources.md) | [`presentations/impulse/`](presentations/impulse/) | Смартфон с нажатием кнопки, карта у терминала, слот-автомат «ДОФАМИН», песочные часы (`5` костей), катящийся жетон `!!token` |
-| **Ричард Кантильон** | `10` · `11 .glb` | [`.pptx` (9.8 МБ)](exports/cantillon-3d-presentation.pptx) · [скрипт](exports/cantillon-presentation-script.md) | [`presentations/cantillon/`](presentations/cantillon/) | Парусник на 8 костях волн (`23` кости), арфа с 13 струнами, мыльный пузырь Миссисипи, весы, свеча с мотыльком, луидор `!!coin` |
-| **Йозеф Шумпетер** | `15` · `15 .glb` | [`.pptx` (14 МБ)](exports/schumpeter-3d-presentation.pptx) · [скрипт](exports/schumpeter-presentation-script.md) | [`presentations/schumpeter/`](presentations/schumpeter/) | Паровоз инноваций (`27 656 Δ`), печатный станок, вихрь созидательного разрушения, волна Кондратьева, шестерня прогресса `!!gear` |
+| **Ричард Кантильон** | `10` · `14 .glb` | [`.pptx` (9.8 МБ)](exports/cantillon-3d-presentation.pptx) · [скрипт](exports/cantillon-presentation-script.md) | [`presentations/cantillon/`](presentations/cantillon/) | Парусник на 8 костях волн (`23` кости), арфа с 13 струнами, мыльный пузырь Миссисипи, весы, свеча с мотыльком, луидор `!!coin` |
+| **Йозеф Шумпетер** | `15` · `14 .glb` | [`.pptx` (14 МБ)](exports/schumpeter-3d-presentation.pptx) · [скрипт](exports/schumpeter-presentation-script.md) | [`presentations/schumpeter/`](presentations/schumpeter/) | Паровоз инноваций (`27 656 Δ`), маятник Ньютона, глобус, песочные часы, шахматный король, шестерня прогресса `!!gear` |
 | **Три чуда** | `3` · `4 .glb` | [`.pptx` (3.5 МБ)](exports/wow-3d-wonders.pptx) · [скрипт](exports/wow-wonders-script.md) | [`presentations/wow/`](presentations/wow/) | Концентрат скелетной магии: маяк с двойным лучом (`14` костей), ярмарочная карусель (`5` костей), торнадо с молнией (`15` костей) |
-| **Остров огня** | `1` · `5 .glb` | [`.pptx` (2.0 МБ)](exports/fun-fire-island.pptx) · [скрипт](exports/fun-fire-island-script.md) | [`presentations/fun/`](presentations/fun/) | Пять живых моделей на одном слайде (`64` кости суммарно): вулкан с орбитальным драконом (`40` костей), кипящая лава и факелы |
+| **Остров огня** | `1` · `3 .glb` | [`.pptx` (2.0 МБ)](exports/fun-fire-island.pptx) · [скрипт](exports/fun-fire-island-script.md) | [`presentations/fun/`](presentations/fun/) | Пять живых размещений на одном слайде (`64` кости суммарно): вулкан с орбитальным драконом (`40` костей), кипящая лава и парные факелы |
 
 <br/>
 
-### Живое движение в кадре · *Импульсивные траты* и *Остров огня*
+### Живое движение в кадре · *Остров огня* (`64` кости на одном слайде)
 
 > *При системной настройке `prefers-reduced-motion: reduce` GIF-анимации ниже автоматически уступают место статичным стоп-кадрам.*
 
 <div align="center">
 
-<picture>
-  <source media="(prefers-reduced-motion: reduce)" srcset=".github/assets/impulse-anim-still.png">
-  <img src="exports/impulse-animations-preview.gif" width="84%" alt="Анимации 13 трёхмерных моделей презентации Психология импульсивных трат">
-</picture>
+<img src="presentations/fun/preview/slide-01.png" width="92%" alt="Слайд Остров огня — пять живых 3D-моделей на одном слайде">
 
 <br/><br/>
 
@@ -1398,21 +1394,21 @@ endsolid myworkaibrain_armillary
     <td align="center" width="33%">
       <picture>
         <source media="(prefers-reduced-motion: reduce)" srcset=".github/assets/volcano-still.png">
-        <img src="presentations/fun/preview/volcano.gif" width="210" alt="Вулкан — 40 костей">
+        <img src="presentations/fun/preview/volcano.gif" width="220" alt="Вулкан — 40 костей">
       </picture>
       <br/><sub><b>volcano.glb</b> · 40 костей · вулкан и дракон</sub>
     </td>
     <td align="center" width="33%">
       <picture>
         <source media="(prefers-reduced-motion: reduce)" srcset=".github/assets/lavapool-still.png">
-        <img src="presentations/fun/preview/lavapool.gif" width="210" alt="Лавовое озеро — 20 костей">
+        <img src="presentations/fun/preview/lavapool.gif" width="220" alt="Лавовое озеро — 20 костей">
       </picture>
       <br/><sub><b>lavapool.glb</b> · 20 костей · пузыри магмы</sub>
     </td>
     <td align="center" width="33%">
       <picture>
         <source media="(prefers-reduced-motion: reduce)" srcset=".github/assets/torch-still.png">
-        <img src="presentations/fun/preview/torch.gif" width="210" alt="Факел — 7 костей">
+        <img src="presentations/fun/preview/torch.gif" width="220" alt="Факел — 7 костей">
       </picture>
       <br/><sub><b>torch.glb</b> · 7 костей · языки пламени</sub>
     </td>
@@ -1422,23 +1418,17 @@ endsolid myworkaibrain_armillary
 </div>
 
 <details>
-<summary><b>🖼 Развернуть контакт-листы всех 42 слайдов (Импульсивные траты · Кантильон · Шумпетер · Три чуда · Остров огня)</b></summary>
+<summary><b>🖼 Развернуть контакт-листы всех слайдов (Кантильон · Шумпетер · Три чуда)</b></summary>
 <br/>
 
-#### 1. Психология импульсивных трат — 13 слайдов ([скачать `.pptx`](exports/impulse-3d-presentation.pptx))
-<img src="exports/impulse-preview.jpg" width="100%" alt="Контакт-лист 13 слайдов презентации Психология импульсивных трат">
-
-#### 2. Ричард Кантильон — 10 слайдов ([скачать `.pptx`](exports/cantillon-3d-presentation.pptx))
+#### 1. Ричард Кантильон — 10 слайдов ([скачать `.pptx`](exports/cantillon-3d-presentation.pptx))
 <img src="exports/cantillon-preview.jpg" width="100%" alt="Контакт-лист 10 слайдов презентации Ричард Кантильон">
 
-#### 3. Йозеф Шумпетер — 15 слайдов ([скачать `.pptx`](exports/schumpeter-3d-presentation.pptx))
+#### 2. Йозеф Шумпетер — 15 слайдов ([скачать `.pptx`](exports/schumpeter-3d-presentation.pptx))
 <img src="exports/schumpeter-preview.jpg" width="100%" alt="Контакт-лист 15 слайдов презентации Йозеф Шумпетер">
 
-#### 4. Три чуда — 3 слайда ([скачать `.pptx`](exports/wow-3d-wonders.pptx))
+#### 3. Три чуда — 3 слайда ([скачать `.pptx`](exports/wow-3d-wonders.pptx))
 <img src="exports/wow-preview.jpg" width="100%" alt="Контакт-лист 3 слайдов презентации Три чуда">
-
-#### 5. Остров огня — живая диорама на одном слайде ([скачать `.pptx`](exports/fun-fire-island.pptx))
-<img src="presentations/fun/preview/slide-01.png" width="100%" alt="Слайд Остров огня">
 
 </details>
 
@@ -1485,14 +1475,13 @@ MyWorkAiBrain/
 ├── AGENTS.md                        # Операционный плейбук для ИИ-агентов (правила, конвейер, запреты)
 ├── train-ai/                        # Полный курс из 6 глав + рабочие сниппеты в train-ai/examples/
 ├── exports/                         # «Примеры экспорта» — готовые .pptx, контакт-листы и скрипты речи
-├── presentations/                   # «Примеры презентаций» — исходный код всех 5 проектов и общий движок
-│   ├── impulse/                     #   13 слайдов · Психология импульсивных трат (14 .glb + GIF + источники)
-│   ├── cantillon/                   #   10 слайдов · Ричард Кантильон (11 .glb + эталон rig.py)
+├── presentations/                   # «Примеры презентаций» — исходный код всех 4 проектов и общий движок
+│   ├── cantillon/                   #   10 слайдов · Ричард Кантильон (14 .glb + эталон rig.py)
 │   ├── schumpeter/                  #   15 слайдов · Йозеф Шумпетер (ядро lib.js + pptx3d.js + render.py)
 │   ├── wow/                         #    3 слайда  · Три чуда: маяк, карусель, торнадо
 │   ├── fun/                         #    1 слайд   · Остров огня: вулкан, дракон, лава, факелы
 │   └── tools/                       #   Утилиты: setup-env.sh, validate-pptx.py, contact-sheet.py, build-readme-assets.py
-└── .github/assets/                  # Векторные гравюры, печати, кинолента Morph, social-preview и .stl-слепки
+└── .github/assets/                  # Векторные гравюры, кристалл, печати, кинолента Morph и .stl-слепки
 ```
 
 ---
@@ -1526,7 +1515,7 @@ bash presentations/tools/setup-env.sh
 
 # 3. Собрать контакт-лист и проверить .pptx структурным валидатором
 python3 presentations/tools/contact-sheet.py presentations/cantillon/preview exports/cantillon-preview.jpg
-for f in impulse-3d-presentation cantillon-3d-presentation wow-3d-wonders fun-fire-island; do
+for f in cantillon-3d-presentation wow-3d-wonders fun-fire-island; do
   python3 presentations/tools/validate-pptx.py "exports/${f}.pptx"
 done
 python3 presentations/tools/validate-pptx.py exports/schumpeter-3d-presentation.pptx --allow-static
@@ -1543,7 +1532,7 @@ python3 presentations/cantillon/models/make_models.py
 node presentations/cantillon/build.js --preview
 ```
 
-А пересобрать всю графику этого `README.md` (гравюру и рентген костей `ship.glb`, `.stl`-слепки моделей, музейные печати, киноленту Morph, отпечаток репозитория и карточку [`.github/assets/social-preview.png`](.github/assets/social-preview.png) для *Settings → Social preview*) можно одной командой:
+А пересобрать всю графику этого `README.md` (кристалл-астролябию, гравюру и рентген костей `ship.glb`, `.stl`-слепки моделей, музейные печати, киноленту Morph, отпечаток репозитория и карточку [`.github/assets/social-preview.png`](.github/assets/social-preview.png) для *Settings → Social preview*) можно одной командой:
 
 ```bash
 python3 presentations/tools/build-readme-assets.py
