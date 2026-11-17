@@ -23,9 +23,9 @@
 | Проект | Файлы в `exports/` | Слайдов | Особенности экспорта |
 |---|---|---:|---|
 | **Психология импульсивных трат** (`presentations/impulse`) | `impulse-3d-presentation.pptx`<br>`impulse-presentation-script.md`<br>`impulse-presentation-sources.md`<br>`impulse-preview.jpg`<br>`impulse-animations-preview.gif` | 13 | Полный эталонный комплект из всех 5 типов артефактов: 13 скелетно-анимированных 3D-моделей, Morph, заметки, таблица источников, контакт-лист и GIF-превью |
-| **Ричард Кантильон** (`presentations/cantillon`) | `cantillon-3d-presentation.pptx`<br>`cantillon-presentation-script.md` | 10 | 10 анимированных музейных экспонатов XVIII века + катящийся по шкале прогресса 3D-луидор |
-| **Йозеф Шумпетер** (`presentations/schumpeter`) | `schumpeter-3d-presentation.pptx`<br>`schumpeter-presentation-script.md` | 15 | 14 процедурных 3D-моделей + Morph-хореография и вращающаяся латунная шестерня прогресса |
-| **Три чуда** (`presentations/wow`) | `wow-3d-wonders.pptx`<br>`wow-wonders-script.md` | 3 | Короткий шоурил из 3 сложных составных анимаций (маяк, карусель, торнадо) |
+| **Ричард Кантильон** (`presentations/cantillon`) | `cantillon-3d-presentation.pptx`<br>`cantillon-presentation-script.md`<br>`cantillon-preview.jpg` | 10 | 10 анимированных музейных экспонатов XVIII века + катящийся по шкале прогресса 3D-луидор + контакт-лист |
+| **Йозеф Шумпетер** (`presentations/schumpeter`) | `schumpeter-3d-presentation.pptx`<br>`schumpeter-presentation-script.md`<br>`schumpeter-preview.jpg` | 15 | 14 процедурных 3D-моделей + Morph-хореография, вращающаяся латунная шестерня прогресса и контакт-лист |
+| **Три чуда** (`presentations/wow`) | `wow-3d-wonders.pptx`<br>`wow-wonders-script.md`<br>`wow-preview.jpg` | 3 | Короткий шоурил из 3 сложных составных анимаций (маяк, карусель, торнадо) + контакт-лист |
 | **Остров огня** (`presentations/fun`) | `fun-fire-island.pptx`<br>`fun-fire-island-script.md` | 1 | 5 одновременно работающих 3D-моделей на одном слайде (64 кости: вулкан, дракон, факелы, лава) |
 
 ---

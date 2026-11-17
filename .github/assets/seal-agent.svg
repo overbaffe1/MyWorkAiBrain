@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 168 188" width="168" height="188" role="img" aria-label="Плейбук ИИ — AGENTS.md">
+  <style>
+    
+  :root {
+    --bg: #F6EFE2;
+    --bg-2: #EDE2CE;
+    --bg-card: #EFE5D4;
+    --veil-0: rgba(246, 239, 226, 0.98);
+    --veil-1: rgba(246, 239, 226, 0.90);
+    --veil-2: rgba(246, 239, 226, 0.00);
+    --ink: #221418;
+    --ink-soft: #5A454B;
+    --muted: #7C656A;
+    --brass: #8F5B14;
+    --brass-hi: #B8791F;
+    --brass-faint: rgba(143, 91, 20, 0.16);
+    --violet: #6D28D9;
+    --violet-hi: #7C3AED;
+    --violet-faint: rgba(109, 40, 217, 0.13);
+    --crimson: #9F1D35;
+    --teal: #0F6E66;
+    --line: rgba(34, 20, 24, 0.14);
+    --line-strong: rgba(143, 91, 20, 0.36);
+    --beam-a: rgba(184, 121, 31, 0.13);
+    --beam-b: rgba(109, 40, 217, 0.09);
+    --mesh-fill: #E7DAC2;
+    --mesh-shade: #D6C3A3;
+    --mesh-edge: #3D262B;
+    --mesh-rib: rgba(61, 38, 43, 0.22);
+    --ghost: rgba(109, 40, 217, 0.22);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0E080D;
+      --bg-2: #180E16;
+      --bg-card: #160D15;
+      --veil-0: rgba(14, 8, 13, 0.98);
+      --veil-1: rgba(14, 8, 13, 0.88);
+      --veil-2: rgba(14, 8, 13, 0.00);
+      --ink: #F8F0E3;
+      --ink-soft: #CBBAB8;
+      --muted: #968186;
+      --brass: #E6BC6A;
+      --brass-hi: #F7D78E;
+      --brass-faint: rgba(230, 188, 106, 0.16);
+      --violet: #B48EFF;
+      --violet-hi: #D1B8FF;
+      --violet-faint: rgba(180, 142, 255, 0.16);
+      --crimson: #F26B83;
+      --teal: #57D1C4;
+      --line: rgba(248, 240, 227, 0.12);
+      --line-strong: rgba(230, 188, 106, 0.34);
+      --beam-a: rgba(230, 188, 106, 0.14);
+      --beam-b: rgba(180, 142, 255, 0.11);
+      --mesh-fill: #1C111A;
+      --mesh-shade: #281824;
+      --mesh-edge: #E8C378;
+      --mesh-rib: rgba(232, 195, 120, 0.20);
+      --ghost: rgba(180, 142, 255, 0.30);
+    }
+  }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .orbit { animation: spinRing 46s linear infinite; }
+    }
+    @keyframes spinRing { to { transform: rotate(360deg); } }
+  </style>
+  <defs>
+    <path id="ringPath" d="M 0,-51 A 51,51 0 1,1 -0.01,-51"/>
+  </defs>
+  <g transform="translate(84, 76)">
+    <circle cx="0" cy="0" r="68" fill="var(--bg-card)" stroke="var(--line-strong)" stroke-width="1.2"/>
+    <path d="M62.0,0.0L66.0,0.0M60.6,12.9L64.6,13.7M56.6,25.2L60.3,26.8M50.2,36.4L53.4,38.8M41.5,46.1L44.2,49.0M31.0,53.7L33.0,57.2M19.2,59.0L20.4,62.8M6.5,61.7L6.9,65.6M-6.5,61.7L-6.9,65.6M-19.2,59.0L-20.4,62.8M-31.0,53.7L-33.0,57.2M-41.5,46.1L-44.2,49.0M-50.2,36.4L-53.4,38.8M-56.6,25.2L-60.3,26.8M-60.6,12.9L-64.6,13.7M-62.0,0.0L-66.0,0.0M-60.6,-12.9L-64.6,-13.7M-56.6,-25.2L-60.3,-26.8M-50.2,-36.4L-53.4,-38.8M-41.5,-46.1L-44.2,-49.0M-31.0,-53.7L-33.0,-57.2M-19.2,-59.0L-20.4,-62.8M-6.5,-61.7L-6.9,-65.6M6.5,-61.7L6.9,-65.6M19.2,-59.0L20.4,-62.8M31.0,-53.7L33.0,-57.2M41.5,-46.1L44.2,-49.0M50.2,-36.4L53.4,-38.8M56.6,-25.2L60.3,-26.8M60.6,-12.9L64.6,-13.7" stroke="var(--brass)" stroke-width="0.9" opacity="0.55"/>
+    <circle cx="0" cy="0" r="39" fill="var(--bg)" stroke="var(--brass)" stroke-width="1.2" opacity="0.85"/>
+    <g class="orbit">
+      <text font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="7.6" letter-spacing="1.55" fill="var(--ink-soft)">
+        <textPath href="#ringPath" startOffset="0%">AGENTS.MD · ПЛЕЙБУК АГЕНТА · ЗОЛОТЫЕ ПРАВИЛА СЦЕНЫ ·</textPath>
+      </text>
+    </g>
+    <g>
+      <polygon points="0,-28 6,-6 28,0 6,6 0,28 -6,6 -28,0 -6,-6" fill="var(--brass-faint)" stroke="var(--brass)" stroke-width="1.5"/>
+      <polygon points="0,-18 18,0 0,18 -18,0" fill="none" stroke="var(--violet)" stroke-width="1.1"/>
+      <circle cx="0" cy="0" r="4" fill="var(--brass)"/>
+            </g>
+  </g>
+  <text x="84" y="164" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="13.5" font-weight="700" fill="var(--ink)">Плейбук ИИ</text>
+  <text x="84" y="180" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" fill="var(--brass)">AGENTS.md</text>
+</svg>

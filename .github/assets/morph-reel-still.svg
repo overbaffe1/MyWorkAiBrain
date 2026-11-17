@@ -1,0 +1,168 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 340" width="1120" height="340" role="img" aria-label="Кинолента хореографии перехода 3D Morph между слайдами">
+  <style>
+    
+  :root {
+    --bg: #F6EFE2;
+    --bg-2: #EDE2CE;
+    --bg-card: #EFE5D4;
+    --veil-0: rgba(246, 239, 226, 0.98);
+    --veil-1: rgba(246, 239, 226, 0.90);
+    --veil-2: rgba(246, 239, 226, 0.00);
+    --ink: #221418;
+    --ink-soft: #5A454B;
+    --muted: #7C656A;
+    --brass: #8F5B14;
+    --brass-hi: #B8791F;
+    --brass-faint: rgba(143, 91, 20, 0.16);
+    --violet: #6D28D9;
+    --violet-hi: #7C3AED;
+    --violet-faint: rgba(109, 40, 217, 0.13);
+    --crimson: #9F1D35;
+    --teal: #0F6E66;
+    --line: rgba(34, 20, 24, 0.14);
+    --line-strong: rgba(143, 91, 20, 0.36);
+    --beam-a: rgba(184, 121, 31, 0.13);
+    --beam-b: rgba(109, 40, 217, 0.09);
+    --mesh-fill: #E7DAC2;
+    --mesh-shade: #D6C3A3;
+    --mesh-edge: #3D262B;
+    --mesh-rib: rgba(61, 38, 43, 0.22);
+    --ghost: rgba(109, 40, 217, 0.22);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0E080D;
+      --bg-2: #180E16;
+      --bg-card: #160D15;
+      --veil-0: rgba(14, 8, 13, 0.98);
+      --veil-1: rgba(14, 8, 13, 0.88);
+      --veil-2: rgba(14, 8, 13, 0.00);
+      --ink: #F8F0E3;
+      --ink-soft: #CBBAB8;
+      --muted: #968186;
+      --brass: #E6BC6A;
+      --brass-hi: #F7D78E;
+      --brass-faint: rgba(230, 188, 106, 0.16);
+      --violet: #B48EFF;
+      --violet-hi: #D1B8FF;
+      --violet-faint: rgba(180, 142, 255, 0.16);
+      --crimson: #F26B83;
+      --teal: #57D1C4;
+      --line: rgba(248, 240, 227, 0.12);
+      --line-strong: rgba(230, 188, 106, 0.34);
+      --beam-a: rgba(230, 188, 106, 0.14);
+      --beam-b: rgba(180, 142, 255, 0.11);
+      --mesh-fill: #1C111A;
+      --mesh-shade: #281824;
+      --mesh-edge: #E8C378;
+      --mesh-rib: rgba(232, 195, 120, 0.20);
+      --ghost: rgba(180, 142, 255, 0.30);
+    }
+  }
+
+    
+  </style>
+  <rect width="1120" height="340" rx="14" fill="var(--bg-card)"/>
+  <rect x="8" y="8" width="1104" height="324" rx="10" fill="none" stroke="var(--line-strong)" stroke-width="1"/>
+  <rect x="28" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="28" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="64" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="64" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="100" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="100" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="136" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="136" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="172" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="172" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="208" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="208" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="244" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="244" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="280" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="280" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="316" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="316" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="352" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="352" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="388" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="388" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="424" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="424" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="460" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="460" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="496" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="496" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="532" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="532" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="568" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="568" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="604" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="604" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="640" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="640" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="676" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="676" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="712" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="712" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="748" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="748" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="784" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="784" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="820" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="820" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="856" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="856" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="892" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="892" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="928" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="928" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="964" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="964" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="1000" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="1000" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="1036" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="1036" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="1072" y="14" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/><rect x="1072" y="317" width="14" height="9" rx="2.5" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="0.8"/>
+
+  <!-- Header -->
+  <text x="36" y="48" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10.5" letter-spacing="1.8" fill="var(--brass)">ПАРТИТУРА ПЕРЕХОДА · P159:MORPH (DUR = 1300 МС) · СОПОСТАВЛЕНИЕ ПО ПРЕФИКСУ !!</text>
+  <circle class="live-badge" cx="1076" cy="44" r="4.5" fill="var(--crimson)"/>
+  <text x="1064" y="48" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" fill="var(--muted)">КАДР 1 → КАДР 2</text>
+
+  <!-- ================= SLIDE N ================= -->
+  <g transform="translate(36, 66)">
+    <rect x="0" y="0" width="446" height="206" rx="10" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="1"/>
+    <!-- Off-stage zones vs visible 16:9 viewport -->
+    <rect x="86" y="14" width="274" height="154" rx="6" fill="var(--brass-faint)" stroke="var(--brass)" stroke-width="1.3"/>
+    <text x="223" y="30" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9.5" font-weight="700" fill="var(--brass)">ЭКРАН СЛАЙДА n (10" × 5.625")</text>
+
+    <text x="43" y="30" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8.5" fill="var(--muted)">КУЛИСА L</text>
+    <text x="403" y="30" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8.5" fill="var(--muted)">КУЛИСА R</text>
+
+    <!-- Active model A in center -->
+    <g transform="translate(223, 84)">
+      <circle cx="0" cy="0" r="26" fill="var(--bg-card)" stroke="var(--brass)" stroke-width="1.8"/>
+      <polygon points="0,-17 15,-3 9,14 -9,14 -15,-3" fill="var(--brass-faint)" stroke="var(--brass)" stroke-width="1.4"/>
+      <text x="0" y="40" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9.5" font-weight="700" fill="var(--ink)">!!model-A</text>
+      <text x="0" y="52" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8.5" fill="var(--brass)">x=5.0" · ry=0°</text>
+    </g>
+
+    <!-- Ghost model B waiting right off-stage -->
+    <g transform="translate(403, 92)" opacity="0.78">
+      <circle cx="0" cy="0" r="21" fill="none" stroke="var(--violet)" stroke-width="1.4" stroke-dasharray="4 3"/>
+      <polygon points="0,-12 11,0 0,12 -11,0" fill="var(--violet-faint)" stroke="var(--violet)" stroke-width="1.2"/>
+      <text x="0" y="38" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9" font-weight="700" fill="var(--violet)">!!model-B</text>
+      <text x="0" y="50" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8" fill="var(--muted)">+14.2" · +80°</text>
+    </g>
+
+    <!-- Rolling !!coin medallion bottom-left -->
+    <g transform="translate(106, 152)">
+      <g class="coin-roll">
+        <circle cx="0" cy="0" r="10" fill="var(--bg-card)" stroke="var(--brass-hi)" stroke-width="1.4"/>
+        <path d="M0,-7v14 M-5,0h10" stroke="var(--brass-hi)" stroke-width="1.1"/>
+      </g>
+    </g>
+    <text x="122" y="155" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8.5" fill="var(--muted)">!!coin rz=0°</text>
+
+    <text x="223" y="191" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="12.5" font-style="italic" fill="var(--ink-soft)">Будущий экспонат ждёт за правой кулисой в развороте +80°</text>
+  </g>
+
+  <!-- ================= MORPH BRIDGE ================= -->
+  <g transform="translate(494, 134)">
+    <line class="stage-arrow" x1="4" y1="34" x2="124" y2="34" stroke="var(--violet)" stroke-width="2"/>
+    <polygon points="128,34 118,28 118,40" fill="var(--violet)"/>
+    <rect x="14" y="2" width="104" height="24" rx="12" fill="var(--violet-faint)" stroke="var(--violet)" stroke-width="1"/>
+    <text x="66" y="18" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" font-weight="700" fill="var(--violet)">MORPH 1.3s</text>
+    <text x="66" y="54" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8.5" fill="var(--muted)">интерполяция</text>
+    <text x="66" y="66" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8.5" fill="var(--muted)">x, y, cam + rz</text>
+  </g>
+
+  <!-- ================= SLIDE N+1 ================= -->
+  <g transform="translate(638, 66)">
+    <rect x="0" y="0" width="446" height="206" rx="10" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="1"/>
+    <rect x="86" y="14" width="274" height="154" rx="6" fill="var(--violet-faint)" stroke="var(--violet)" stroke-width="1.3"/>
+    <text x="223" y="30" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9.5" font-weight="700" fill="var(--violet)">ЭКРАН СЛАЙДА n+1 (10" × 5.625")</text>
+
+    <text x="43" y="30" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8.5" fill="var(--muted)">КУЛИСА L</text>
+    <text x="403" y="30" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8.5" fill="var(--muted)">КУЛИСА R</text>
+
+    <!-- Outgoing ghost A exits left off-stage -->
+    <g transform="translate(43, 92)" opacity="0.78">
+      <circle cx="0" cy="0" r="21" fill="none" stroke="var(--brass)" stroke-width="1.4" stroke-dasharray="4 3"/>
+      <polygon points="0,-13 11,-3 6,10 -6,10 -11,-3" fill="var(--brass-faint)" stroke="var(--brass)" stroke-width="1.2"/>
+      <text x="0" y="38" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9" font-weight="700" fill="var(--brass)">!!model-A</text>
+      <text x="0" y="50" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8" fill="var(--muted)">-4.2" · -80°</text>
+    </g>
+
+    <!-- Incoming model B arrives center stage -->
+    <g transform="translate(223, 84)">
+      <circle cx="0" cy="0" r="26" fill="var(--bg-card)" stroke="var(--violet)" stroke-width="1.8"/>
+      <polygon points="0,-17 17,0 0,17 -17,0" fill="var(--violet-faint)" stroke="var(--violet)" stroke-width="1.5"/>
+      <text x="0" y="40" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9.5" font-weight="700" fill="var(--ink)">!!model-B</text>
+      <text x="0" y="52" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8.5" fill="var(--violet)">x=5.0" · ry=0°</text>
+    </g>
+
+    <!-- Next ghost C preloaded right -->
+    <g transform="translate(403, 92)" opacity="0.65">
+      <circle cx="0" cy="0" r="19" fill="none" stroke="var(--teal)" stroke-width="1.3" stroke-dasharray="4 3"/>
+      <circle cx="0" cy="0" r="7" fill="none" stroke="var(--teal)" stroke-width="1.2"/>
+      <text x="0" y="38" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9" font-weight="700" fill="var(--teal)">!!model-C</text>
+      <text x="0" y="50" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8" fill="var(--muted)">+14.2" · +80°</text>
+    </g>
+
+    <!-- Rolled !!coin medallion -->
+    <g transform="translate(274, 152)">
+      <g class="coin-roll">
+        <circle cx="0" cy="0" r="10" fill="var(--bg-card)" stroke="var(--brass-hi)" stroke-width="1.4"/>
+        <path d="M0,-7v14 M-5,0h10" stroke="var(--brass-hi)" stroke-width="1.1"/>
+      </g>
+    </g>
+    <text x="290" y="155" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8.5" fill="var(--muted)">!!coin -146°</text>
+
+    <text x="223" y="191" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="12.5" font-style="italic" fill="var(--ink-soft)">A уходит влево (-80°), B поворачивается к залу, монета катится</text>
+  </g>
+
+  <text x="560" y="298" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10.5" fill="var(--ink-soft)">ВАЖНО: призраки !! за краем холста обязаны нести ту же a3d:animation (auto/indefinite), иначе клип оборвётся в полёте</text>
+</svg>

@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" width="640" height="340" role="img" aria-label="Состав репозитория MyWorkAiBrain">
+  <style>
+  :root {
+    --bg: #F6EFE2;
+    --bg-2: #EDE2CE;
+    --bg-card: #EFE5D4;
+    --veil-0: rgba(246, 239, 226, 0.98);
+    --veil-1: rgba(246, 239, 226, 0.90);
+    --veil-2: rgba(246, 239, 226, 0.00);
+    --ink: #221418;
+    --ink-soft: #5A454B;
+    --muted: #7C656A;
+    --brass: #8F5B14;
+    --brass-hi: #B8791F;
+    --brass-faint: rgba(143, 91, 20, 0.16);
+    --violet: #6D28D9;
+    --violet-hi: #7C3AED;
+    --violet-faint: rgba(109, 40, 217, 0.13);
+    --crimson: #9F1D35;
+    --teal: #0F6E66;
+    --line: rgba(34, 20, 24, 0.14);
+    --line-strong: rgba(143, 91, 20, 0.36);
+    --beam-a: rgba(184, 121, 31, 0.13);
+    --beam-b: rgba(109, 40, 217, 0.09);
+    --mesh-fill: #E7DAC2;
+    --mesh-shade: #D6C3A3;
+    --mesh-edge: #3D262B;
+    --mesh-rib: rgba(61, 38, 43, 0.22);
+    --ghost: rgba(109, 40, 217, 0.22);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0E080D;
+      --bg-2: #180E16;
+      --bg-card: #160D15;
+      --veil-0: rgba(14, 8, 13, 0.98);
+      --veil-1: rgba(14, 8, 13, 0.88);
+      --veil-2: rgba(14, 8, 13, 0.00);
+      --ink: #F8F0E3;
+      --ink-soft: #CBBAB8;
+      --muted: #968186;
+      --brass: #E6BC6A;
+      --brass-hi: #F7D78E;
+      --brass-faint: rgba(230, 188, 106, 0.16);
+      --violet: #B48EFF;
+      --violet-hi: #D1B8FF;
+      --violet-faint: rgba(180, 142, 255, 0.16);
+      --crimson: #F26B83;
+      --teal: #57D1C4;
+      --line: rgba(248, 240, 227, 0.12);
+      --line-strong: rgba(230, 188, 106, 0.34);
+      --beam-a: rgba(230, 188, 106, 0.14);
+      --beam-b: rgba(180, 142, 255, 0.11);
+      --mesh-fill: #1C111A;
+      --mesh-shade: #281824;
+      --mesh-edge: #E8C378;
+      --mesh-rib: rgba(232, 195, 120, 0.20);
+      --ghost: rgba(180, 142, 255, 0.30);
+    }
+  }
+</style>
+  <rect width="640" height="340" rx="14" fill="var(--bg)"/>
+  <rect x="10" y="10" width="620" height="320" rx="10" fill="none" stroke="var(--line-strong)" stroke-width="1"/>
+  <text x="28" y="40" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10.5" letter-spacing="1.5" fill="var(--brass)">ОТПЕЧАТОК РЕПОЗИТОРИЯ · 261 ФАЙЛОВ · 94.8 МБ</text>
+  <line x1="28" y1="54" x2="612" y2="54" stroke="var(--line)" stroke-width="0.8"/>
+  <g><text x="28" y="91" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="var(--ink)">exports/ (.pptx + превью)</text><rect x="230" y="78" width="206.1" height="16" rx="4" fill="var(--crimson)" fill-opacity="0.35" stroke="var(--crimson)" stroke-width="1"/><text x="444.1" y="90" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" fill="var(--muted)">17 ф. · 42.9 МБ</text><text x="28" y="125" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="var(--ink)">cantillon/ (10 сл.)</text><rect x="230" y="112" width="65.8" height="16" rx="4" fill="var(--brass)" fill-opacity="0.35" stroke="var(--brass)" stroke-width="1"/><text x="303.8" y="124" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" fill="var(--muted)">48 ф. · 13.7 МБ</text><text x="28" y="159" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="var(--ink)">schumpeter/ (15 сл.)</text><rect x="230" y="146" width="60.3" height="16" rx="4" fill="var(--violet)" fill-opacity="0.35" stroke="var(--violet)" stroke-width="1"/><text x="298.3" y="158" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" fill="var(--muted)">61 ф. · 12.6 МБ</text><text x="28" y="193" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="var(--ink)">impulse/ (13 сл.)</text><rect x="230" y="180" width="62.0" height="16" rx="4" fill="var(--teal)" fill-opacity="0.35" stroke="var(--teal)" stroke-width="1"/><text x="300.0" y="192" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" fill="var(--muted)">52 ф. · 12.9 МБ</text><text x="28" y="227" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="var(--ink)">wow/ (3 чуда)</text><rect x="230" y="214" width="20.0" height="16" rx="4" fill="var(--brass-hi)" fill-opacity="0.35" stroke="var(--brass-hi)" stroke-width="1"/><text x="258.0" y="226" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" fill="var(--muted)">19 ф. · 4.2 МБ</text><text x="28" y="261" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="var(--ink)">fun/ (вулкан)</text><rect x="230" y="248" width="22.7" height="16" rx="4" fill="var(--crimson)" fill-opacity="0.35" stroke="var(--crimson)" stroke-width="1"/><text x="260.7" y="260" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" fill="var(--muted)">21 ф. · 4.7 МБ</text><text x="28" y="295" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="var(--ink)">train-ai/ · tools · SVG</text><rect x="230" y="282" width="18.0" height="16" rx="4" fill="var(--ink-soft)" fill-opacity="0.35" stroke="var(--ink-soft)" stroke-width="1"/><text x="256.0" y="294" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" fill="var(--muted)">43 ф. · 3.8 МБ</text></g>
+</svg>

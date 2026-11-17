@@ -29,6 +29,7 @@
 | [`tools/setup-env.sh`](tools/setup-env.sh) | Поднимает всё окружение в чистой песочнице без `apt` и GPU: `bpy` (headless Blender), X11/GL-заглушки в `/tmp/bstub`, `pillow`, `numpy`, `python-pptx` и `npm i` в `schumpeter/` |
 | [`tools/validate-pptx.py`](tools/validate-pptx.py) | Универсальная структурная проверка готового `.pptx` (валидность XML, наличие `am3d:model3d`, уникальность имён, `embedAnim`, эффект «Сцена», Morph, заметки, отсутствие Draco) |
 | [`tools/contact-sheet.py`](tools/contact-sheet.py) | Склейка `preview/slide-*.png` в единый подписанный лист `exports/<slug>-preview.jpg` для быстрой визуальной проверки вёрстки |
+| [`tools/build-readme-assets.py`](tools/build-readme-assets.py) | Генератор выставочной витрины `.github/assets/`: проекция реальных `.glb` в гравюры и рентген костей, экспорт `.stl`-слепков, печати и карта репозитория |
 | [`schumpeter/lib.js`](schumpeter/lib.js) | Декларативная разметка слайда (`Slide`): один код рендерится и в редактируемый `.pptx` (`pptxgenjs`), и в HTML → PNG (`puppeteer-core` + `@sparticuz/chromium`) |
 | [`schumpeter/pptx3d.js`](schumpeter/pptx3d.js) | Пост-обработка `.pptx` через `JSZip`: подмена картинок-заглушек на `am3d:model3d` + `.glb`, расчёт камеры, `a3danim:embedAnim`, тайминг «Сцены», Morph и дедупликация медиа |
 | [`schumpeter/models/make_models.py`](schumpeter/models/make_models.py) | Базовые геометрические примитивы (`box`, `cyl`, `sphere`, `torus`, `lathe`, `tube`, `profile2d`, `mesh_obj`, `coin`, `book`) и палитра материалов `M(name)` |
