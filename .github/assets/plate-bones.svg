@@ -27,6 +27,14 @@
     --mesh-edge: #3D262B;
     --mesh-rib: rgba(61, 38, 43, 0.22);
     --ghost: rgba(109, 40, 217, 0.22);
+    --crys-tl: #E3B663;
+    --crys-tr: #C2882E;
+    --crys-bl: rgba(124, 58, 237, 0.84);
+    --crys-br: rgba(91, 33, 182, 0.92);
+    --crys-st-top: #8B5A19;
+    --crys-st-bot: #4C1D95;
+    --crys-glow: #E3B663;
+    --crys-node: #FFFBEB;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -56,6 +64,14 @@
       --mesh-edge: #E8C378;
       --mesh-rib: rgba(232, 195, 120, 0.20);
       --ghost: rgba(180, 142, 255, 0.30);
+      --crys-tl: rgba(232, 194, 122, 0.90);
+      --crys-tr: rgba(185, 128, 44, 0.92);
+      --crys-bl: rgba(109, 55, 184, 0.82);
+      --crys-br: rgba(70, 32, 125, 0.88);
+      --crys-st-top: #FFF3D1;
+      --crys-st-bot: #C4B5FD;
+      --crys-glow: #FFE4A3;
+      --crys-node: #FFF7E0;
     }
   }
 </style>

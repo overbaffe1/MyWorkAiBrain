@@ -24,8 +24,8 @@
      * `presentations/schumpeter/models/render.py` — Cycles-рендер PNG-постеров с камерой «как в PowerPoint».
      * `presentations/cantillon/models/rig.py` — класс `Rig` и `export_rigged(...)` для скелетной анимации.
    * **Какой пример брать за образец под задачу**:
-     * *Историческая / академическая / биографическая тема* → [`presentations/cantillon/`](presentations/cantillon/) (10 слайдов, 10 музейных экспонатов).
-     * *Современная / цифровая / исследовательская тема* → [`presentations/impulse/`](presentations/impulse/) (13 слайдов: гаджеты, терминалы, слот-машина, анкета + расширение палитры `EXTRA` через хук `mm.M = MT`).
+     * *Историческая / академическая / биографическая тема со скелетной анимацией* → [`presentations/cantillon/`](presentations/cantillon/) (10 слайдов, 10 музейных экспонатов).
+     * *Длинный структурированный доклад и ядро движка* → [`presentations/schumpeter/`](presentations/schumpeter/) (15 слайдов, 14 экспонатов + шестерня прогресса).
      * *Короткий визуальный шоурил со сложной динамикой* → [`presentations/wow/`](presentations/wow/) (3 слайда: маяк, карусель, торнадо).
      * *Мульти-модельная сцена / диорама на одном слайде* → [`presentations/fun/`](presentations/fun/) (5 живых моделей одновременно, 64 кости).
 3. **[`exports/`](exports/) — Примеры экспорта**:
@@ -83,7 +83,7 @@ mm.OUT = os.path.join(HERE, "glb")
 os.makedirs(mm.OUT, exist_ok=True)
 ```
 
-Если теме нужны дополнительные материалы (экраны, пластик, неон UI, банкноты и т.п.), расширь палитру через хук `EXTRA` + `mm.M = MT` по образцу `presentations/impulse/models/make_models.py`.
+Если теме нужны дополнительные материалы (экраны, пластик, неон UI, банкноты и т.п.), расширь базовую палитру `M()` своими PBR-материалами прямо в `presentations/<slug>/models/make_models.py` (без прозрачности `BLEND`).
 
 **Правила моделирования и анимации:**
 * **Только скелетная анимация (`Rig` + `export_rigged`):** PowerPoint **игнорирует** обычную анимацию объектов (node TRS) и shape keys. Все подвижные детали привязываются к костям одной армутуры (`m = rig.mark()` → геометрия → `rig.take(m, "part", head=(x, y, z))`).
@@ -118,8 +118,8 @@ GLB_DIR=$PWD/models/glb LD_LIBRARY_PATH=/tmp/bstub KEEP=1 FRAMES=8 PX=300 SAMPLE
 
 ### Шаг 4. Сгенерировать фон сцены (`stage.py`) и собрать слайды (`build.js`)
 
-1. **`stage.py`** (по образцу `presentations/cantillon/stage.py` или `presentations/impulse/stage.py`): генерирует `assets/stage-bg.jpg` (градиент + мягкая виньетка + лёгкое зерно без полос), `assets/glow.png`, `assets/shadow.png` и прозрачный `assets/clear.png` (для Morph-призраков).
-2. **`build.js`** (по образцу `presentations/cantillon/build.js` или `presentations/impulse/build.js`):
+1. **`stage.py`** (по образцу `presentations/cantillon/stage.py` или `presentations/wow/stage.py`): генерирует `assets/stage-bg.jpg` (градиент + мягкая виньетка + лёгкое зерно без полос), `assets/glow.png`, `assets/shadow.png` и прозрачный `assets/clear.png` (для Morph-призраков).
+2. **`build.js`** (по образцу `presentations/cantillon/build.js` или `presentations/wow/build.js`):
    * Подключает `../schumpeter/lib.js` и `../schumpeter/pptx3d.js` (а пакеты `pptxgenjs` / `jszip` резолвит из `../schumpeter/package.json`).
    * На каждом слайде размещает главный экспонат `!!m-<key>`, а за правым и левым краями слайда — «призраки» соседних экспонатов с `clear.png`, чтобы **Morph** плавно ввозил и увозил 3D-модели с поворотом.
    * На верхней шкале прогресса двигает и вращает 3D-жетон (`!!coin` / `!!token`, ~`-146°` на слайд).
@@ -140,7 +140,7 @@ GLB_DIR=$PWD/models/glb LD_LIBRARY_PATH=/tmp/bstub KEEP=1 FRAMES=8 PX=300 SAMPLE
    ```bash
    python3 presentations/cantillon/models/anim_sheet.py exports/<slug>-animations-preview.gif <key1> <key2> ...
    ```
-   *(Либо скопируй/адаптируй `anim_preview.py` + `anim_sheet.py` локально в `presentations/<slug>/models/`, как сделано в `presentations/impulse/models/`).*
+   *(Либо скопируй/адаптируй `anim_preview.py` + `anim_sheet.py` локально в `presentations/<slug>/models/`).*
 3. **Запусти автоматический валидатор `.pptx`**:
    ```bash
    python3 presentations/tools/validate-pptx.py exports/<slug>-3d-presentation.pptx --expect-slides <N>

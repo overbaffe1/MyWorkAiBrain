@@ -22,7 +22,6 @@
 
 | Проект | Файлы в `exports/` | Слайдов | Особенности экспорта |
 |---|---|---:|---|
-| **Психология импульсивных трат** (`presentations/impulse`) | `impulse-3d-presentation.pptx`<br>`impulse-presentation-script.md`<br>`impulse-presentation-sources.md`<br>`impulse-preview.jpg`<br>`impulse-animations-preview.gif` | 13 | Полный эталонный комплект из всех 5 типов артефактов: 13 скелетно-анимированных 3D-моделей, Morph, заметки, таблица источников, контакт-лист и GIF-превью |
 | **Ричард Кантильон** (`presentations/cantillon`) | `cantillon-3d-presentation.pptx`<br>`cantillon-presentation-script.md`<br>`cantillon-preview.jpg` | 10 | 10 анимированных музейных экспонатов XVIII века + катящийся по шкале прогресса 3D-луидор + контакт-лист |
 | **Йозеф Шумпетер** (`presentations/schumpeter`) | `schumpeter-3d-presentation.pptx`<br>`schumpeter-presentation-script.md`<br>`schumpeter-preview.jpg` | 15 | 14 процедурных 3D-моделей + Morph-хореография, вращающаяся латунная шестерня прогресса и контакт-лист |
 | **Три чуда** (`presentations/wow`) | `wow-3d-wonders.pptx`<br>`wow-wonders-script.md`<br>`wow-preview.jpg` | 3 | Короткий шоурил из 3 сложных составных анимаций (маяк, карусель, торнадо) + контакт-лист |
@@ -33,8 +32,9 @@
 ## Быстрая проверка любого `.pptx` в `exports/`
 
 ```bash
-python3 presentations/tools/validate-pptx.py exports/impulse-3d-presentation.pptx
 python3 presentations/tools/validate-pptx.py exports/cantillon-3d-presentation.pptx
+python3 presentations/tools/validate-pptx.py exports/wow-3d-wonders.pptx
+python3 presentations/tools/validate-pptx.py exports/fun-fire-island.pptx
 python3 presentations/tools/validate-pptx.py exports/schumpeter-3d-presentation.pptx --allow-static
 ```
 

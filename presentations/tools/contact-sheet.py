@@ -6,7 +6,7 @@ clipping, bad line wraps, overlaps, or small font sizes.
 
 Usage:
   python3 presentations/tools/contact-sheet.py presentations/cantillon/preview exports/cantillon-preview.jpg
-  python3 presentations/tools/contact-sheet.py 'presentations/impulse/preview/slide-*.png' exports/impulse-preview.jpg --cols 3
+  python3 presentations/tools/contact-sheet.py 'presentations/schumpeter/preview/slide-*.png' exports/schumpeter-preview.jpg --cols 3
 """
 import argparse
 import glob
