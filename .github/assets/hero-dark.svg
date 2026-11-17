@@ -15,7 +15,7 @@
       <stop offset="50%" stop-color="#9D5CFF"/>
       <stop offset="100%" stop-color="#38BDF8" stop-opacity="0"/>
     </linearGradient>
-    <radialGradient id="stageGlow" cx="80%" cy="50%" r="36%">
+    <radialGradient id="stageGlow" cx="81%" cy="50%" r="34%">
       <stop offset="0%" stop-color="#E3B663" stop-opacity="0.24"/>
       <stop offset="48%" stop-color="#8A2BE2" stop-opacity="0.12"/>
       <stop offset="100%" stop-color="#0E080B" stop-opacity="0"/>
@@ -35,21 +35,6 @@
       .pipe { font: 600 13.5px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; fill: #A78BFA; }
       .chip-txt { font: 600 12px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; fill: #EDE4D8; }
       .chip-num { fill: #E3B663; font-weight: 700; }
-      .float-rig { animation: bob 4.6s ease-in-out infinite; transform-origin: 975px 140px; }
-      .pulse-cursor { animation: blink 1.1s steps(2, start) infinite; }
-      .pulse-core { animation: glowPulse 3.2s ease-in-out infinite; transform-origin: 975px 140px; }
-      @keyframes bob {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-9px); }
-      }
-      @keyframes blink {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.15; }
-      }
-      @keyframes glowPulse {
-        0%, 100% { opacity: 0.72; transform: scale(0.95); }
-        50% { opacity: 1; transform: scale(1.12); }
-      }
     </style>
   </defs>
 
@@ -57,7 +42,7 @@
     <rect width="1200" height="280" fill="url(#bg)"/>
     <rect width="1200" height="280" fill="url(#stageGlow)"/>
 
-    <!-- Subtle animated bottom wave -->
+    <!-- Subtle animated bottom waves -->
     <path fill="#8A2BE2" fill-opacity="0.08">
       <animate attributeName="d" dur="10s" repeatCount="indefinite"
         values="M0,235 C300,205 620,268 920,232 C1060,215 1140,225 1200,234 L1200,280 L0,280 Z;
@@ -72,38 +57,40 @@
     </path>
 
     <!-- Museum exhibit astrolabe & 3D rigged crystal on the right -->
-    <g transform="translate(975, 140)">
-      <circle r="112" fill="none" stroke="#E3B663" stroke-opacity="0.16" stroke-width="1"/>
-      <circle r="92" fill="none" stroke="#E3B663" stroke-opacity="0.34" stroke-width="1.2" stroke-dasharray="5 7">
+    <g transform="translate(990, 140)">
+      <circle r="110" fill="none" stroke="#E3B663" stroke-opacity="0.16" stroke-width="1"/>
+      <g>
         <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="38s" repeatCount="indefinite"/>
-      </circle>
-      <circle r="70" fill="none" stroke="#A78BFA" stroke-opacity="0.32" stroke-width="1.2" stroke-dasharray="18 8 3 8">
+        <circle r="90" fill="none" stroke="#E3B663" stroke-opacity="0.34" stroke-width="1.2" stroke-dasharray="5 7"/>
+      </g>
+      <g>
         <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="26s" repeatCount="indefinite"/>
-      </circle>
-      <ellipse rx="84" ry="26" fill="none" stroke="#E3B663" stroke-opacity="0.28" stroke-width="1.1" transform="rotate(-18)"/>
+        <circle r="68" fill="none" stroke="#A78BFA" stroke-opacity="0.32" stroke-width="1.2" stroke-dasharray="18 8 3 8"/>
+      </g>
+      <ellipse rx="82" ry="25" fill="none" stroke="#E3B663" stroke-opacity="0.28" stroke-width="1.1" transform="rotate(-18)"/>
       <g>
         <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="14s" repeatCount="indefinite"/>
-        <circle cx="92" cy="0" r="3.2" fill="#E3B663"/>
-        <circle cx="-70" cy="0" r="2.6" fill="#A78BFA"/>
+        <circle cx="90" cy="0" r="3.2" fill="#E3B663"/>
+        <circle cx="-68" cy="0" r="2.6" fill="#A78BFA"/>
       </g>
-    </g>
 
-    <circle class="pulse-core" cx="975" cy="140" r="42" fill="url(#coreGlow)"/>
+      <circle cx="0" cy="0" r="42" fill="url(#coreGlow)">
+        <animate attributeName="r" values="38;46;38" dur="3.2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.72;1;0.72" dur="3.2s" repeatCount="indefinite"/>
+      </circle>
 
-    <!-- Floating isometric 3D polyhedron -->
-    <g class="float-rig">
-      <!-- Top pyramid facets -->
-      <polygon points="975,84 934,136 975,152" fill="#E8C27A" fill-opacity="0.88" stroke="#FFF3D1" stroke-width="1"/>
-      <polygon points="975,84 1016,136 975,152" fill="#B9802C" fill-opacity="0.90" stroke="#F6DBA0" stroke-width="1"/>
-      <!-- Bottom pyramid facets -->
-      <polygon points="934,136 975,152 975,198" fill="#6D37B8" fill-opacity="0.78" stroke="#C4B5FD" stroke-width="1"/>
-      <polygon points="1016,136 975,152 975,198" fill="#46207D" fill-opacity="0.85" stroke="#A78BFA" stroke-width="1"/>
-      <!-- Bone pivot nodes -->
-      <circle cx="975" cy="84" r="3.2" fill="#FFF7E0"/>
-      <circle cx="934" cy="136" r="2.8" fill="#E3B663"/>
-      <circle cx="1016" cy="136" r="2.8" fill="#E3B663"/>
-      <circle cx="975" cy="152" r="3.4" fill="#FFF7E0"/>
-      <circle cx="975" cy="198" r="3.0" fill="#C4B5FD"/>
+      <g>
+        <animateTransform attributeName="transform" type="translate" values="0,4; 0,-6; 0,4" dur="4.4s" repeatCount="indefinite"/>
+        <polygon points="0,-56 -41,-4 0,12" fill="#E8C27A" fill-opacity="0.88" stroke="#FFF3D1" stroke-width="1"/>
+        <polygon points="0,-56 41,-4 0,12" fill="#B9802C" fill-opacity="0.90" stroke="#F6DBA0" stroke-width="1"/>
+        <polygon points="-41,-4 0,12 0,58" fill="#6D37B8" fill-opacity="0.78" stroke="#C4B5FD" stroke-width="1"/>
+        <polygon points="41,-4 0,12 0,58" fill="#46207D" fill-opacity="0.85" stroke="#A78BFA" stroke-width="1"/>
+        <circle cx="0" cy="-56" r="3.2" fill="#FFF7E0"/>
+        <circle cx="-41" cy="-4" r="2.8" fill="#E3B663"/>
+        <circle cx="41" cy="-4" r="2.8" fill="#E3B663"/>
+        <circle cx="0" cy="12" r="3.4" fill="#FFF7E0"/>
+        <circle cx="0" cy="58" r="3.0" fill="#C4B5FD"/>
+      </g>
     </g>
 
     <!-- Left editorial content -->
@@ -117,25 +104,24 @@
 
     <text x="52" y="185" class="pipe">
       &gt; bpy + rig.py ──► skinned .glb ──► am3d:model3d + Morph ──► .pptx
-      <tspan class="pulse-cursor" fill="#E3B663">▋</tspan>
+      <tspan fill="#E3B663">▋<animate attributeName="opacity" values="1;0.15;1" dur="1.1s" repeatCount="indefinite"/></tspan>
     </text>
 
-    <!-- Metric pills -->
+    <!-- Metric pills (centered text inside each pill) -->
     <g transform="translate(52, 214)">
-      <rect x="0" y="0" width="166" height="32" rx="8" fill="#FFFFFF" fill-opacity="0.05" stroke="#E3B663" stroke-opacity="0.35"/>
-      <text x="14" y="20" class="chip-txt"><tspan class="chip-num">5</tspan> эталонных проектов</text>
+      <rect x="0" y="0" width="180" height="32" rx="8" fill="#FFFFFF" fill-opacity="0.05" stroke="#E3B663" stroke-opacity="0.35"/>
+      <text x="90" y="20.5" text-anchor="middle" class="chip-txt"><tspan class="chip-num">5</tspan> эталонных проектов</text>
 
-      <rect x="178" y="0" width="150" height="32" rx="8" fill="#FFFFFF" fill-opacity="0.05" stroke="#E3B663" stroke-opacity="0.35"/>
-      <text x="192" y="20" class="chip-txt"><tspan class="chip-num">42</tspan> живых слайда</text>
+      <rect x="192" y="0" width="156" height="32" rx="8" fill="#FFFFFF" fill-opacity="0.05" stroke="#E3B663" stroke-opacity="0.35"/>
+      <text x="270" y="20.5" text-anchor="middle" class="chip-txt"><tspan class="chip-num">42</tspan> живых слайда</text>
 
-      <rect x="340" y="0" width="194" height="32" rx="8" fill="#FFFFFF" fill-opacity="0.05" stroke="#A78BFA" stroke-opacity="0.4"/>
-      <text x="354" y="20" class="chip-txt"><tspan class="chip-num">45+</tspan> процедурных 3D-сцен</text>
+      <rect x="360" y="0" width="204" height="32" rx="8" fill="#FFFFFF" fill-opacity="0.05" stroke="#A78BFA" stroke-opacity="0.4"/>
+      <text x="462" y="20.5" text-anchor="middle" class="chip-txt"><tspan class="chip-num">45+</tspan> процедурных 3D-сцен</text>
 
-      <rect x="546" y="0" width="168" height="32" rx="8" fill="#FFFFFF" fill-opacity="0.05" stroke="#38BDF8" stroke-opacity="0.35"/>
-      <text x="560" y="20" class="chip-txt"><tspan class="chip-num">0</tspan> нейрокартинок</text>
+      <rect x="576" y="0" width="166" height="32" rx="8" fill="#FFFFFF" fill-opacity="0.05" stroke="#38BDF8" stroke-opacity="0.35"/>
+      <text x="659" y="20.5" text-anchor="middle" class="chip-txt"><tspan class="chip-num">0</tspan> нейрокартинок</text>
     </g>
 
-    <!-- Outer card frame -->
     <rect x="0.75" y="0.75" width="1198.5" height="278.5" rx="17.5" fill="none" stroke="#E3B663" stroke-opacity="0.28" stroke-width="1.5"/>
   </g>
 </svg>
