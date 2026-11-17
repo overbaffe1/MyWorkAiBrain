@@ -1,10 +1,30 @@
-# MyWorkAiBrain — Конвейер живых 3D-презентаций для PowerPoint
+<div align="center">
 
-![Blender bpy](https://img.shields.io/badge/Blender-bpy%205.x%20(headless)-EA7600?style=flat-square&logo=blender&logoColor=white)
-![OpenXML 3D](https://img.shields.io/badge/PowerPoint-am3d%3Amodel3d%20%2B%20Morph-D24726?style=flat-square)
-![glTF 2.0](https://img.shields.io/badge/glTF%202.0-Skinned%20Animation-007EC6?style=flat-square)
-![Node.js](https://img.shields.io/badge/Node.js-pptxgenjs%20%2B%20JSZip-339933?style=flat-square&logo=nodedotjs&logoColor=white)
-![AI Ready](https://img.shields.io/badge/AI%20Agent-Playbook%20Included-8A2BE2?style=flat-square)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/hero-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset=".github/assets/hero-light.svg">
+  <img alt="MyWorkAiBrain — Конвейер живых 3D-презентаций для PowerPoint" src=".github/assets/hero-dark.svg" width="100%">
+</picture>
+
+<br>
+
+[![Инструкция ИИ-агенту](https://img.shields.io/badge/AGENTS.md-Плейбук%20агента-8A2BE2?style=for-the-badge&logo=robotframework&logoColor=white)](AGENTS.md)
+[![Учебник train-ai](https://img.shields.io/badge/train--ai-Учебник%20(6%20глав)-E3B663?style=for-the-badge&logo=readthedocs&logoColor=black)](train-ai/)
+[![Примеры презентаций](https://img.shields.io/badge/presentations-Примеры%20кода-EA7600?style=for-the-badge&logo=blender&logoColor=white)](presentations/)
+[![Готовые .pptx](https://img.shields.io/badge/exports-Готовые%20.pptx-D24726?style=for-the-badge&logo=files&logoColor=white)](exports/)
+
+[![Blender bpy](https://img.shields.io/badge/Blender-bpy%205.x%20(headless)-EA7600?style=flat-square&logo=blender&logoColor=white)](train-ai/01-okruzhenie.md)
+[![OpenXML 3D](https://img.shields.io/badge/PowerPoint-am3d%3Amodel3d%20%2B%20Morph-D24726?style=flat-square)](train-ai/04-3d-v-pptx.md)
+[![glTF 2.0](https://img.shields.io/badge/glTF%202.0-Skinned%20Animation-007EC6?style=flat-square)](train-ai/03-animaciya.md)
+[![Node.js](https://img.shields.io/badge/Node.js-pptxgenjs%20%2B%20JSZip-339933?style=flat-square&logo=nodedotjs&logoColor=white)](presentations/schumpeter/)
+![Last Commit](https://img.shields.io/github/last-commit/overbaffe1/MyWorkAiBrain?style=flat-square&color=6D28D9&label=Updated)
+![Repo Size](https://img.shields.io/github/repo-size/overbaffe1/MyWorkAiBrain?style=flat-square&color=334155&label=Size)
+
+<img src="https://skillicons.dev/icons?i=py,js,nodejs,blender,html,linux,git,github&theme=dark" alt="Tech Stack" height="38">
+
+</div>
+
+<br>
 
 Инженерный конвейер, набор эталонных проектов и база знаний, с помощью которых **ИИ-агент (или разработчик) чисто кодом с нуля собирает редактируемые презентации `.pptx` с настоящими анимированными 3D-моделями внутри слайдов** — без ручного моделирования, без видеовставок и без нейросетевых картинок.
 
@@ -13,59 +33,86 @@
 </p>
 
 <p align="center">
-  <img src="presentations/fun/preview/volcano.gif" alt="Анимация вулкана и дракона" width="31%">
+  <img src="presentations/fun/preview/volcano.gif" alt="Анимация вулкана и дракона" width="32%">
   &nbsp;
-  <img src="presentations/fun/preview/torch.gif" alt="Анимация факела" width="31%">
+  <img src="presentations/fun/preview/torch.gif" alt="Анимация факела" width="32%">
   &nbsp;
-  <img src="presentations/fun/preview/lavapool.gif" alt="Анимация лавовой чаши" width="31%">
+  <img src="presentations/fun/preview/lavapool.gif" alt="Анимация лавовой чаши" width="32%">
 </p>
 
 ---
 
-## В чём фишка
+## В чём инженерная магия
 
-Обычные «ИИ-презентации» — это либо скучные шаблонные буллеты, либо сплющенные сгенерированные картинки, где нельзя поправить ни одной буквы. Здесь всё иначе:
+<img align="right" width="46%" src="exports/impulse-animations-preview.gif" alt="Скелетные анимации 13 экспонатов">
 
-* **Настоящие 3D-объекты PowerPoint (`am3d:model3d`)** — внутрь `.pptx` вшиваются реальные `.glb`-модели без фона. В редакторе их можно крутить мышкой на 360°, менять ракурс и масштаб.
-* **Собственная скелетная анимация деталей (`a3danim:embedAnim`)** — модели не просто вращаются вокруг оси: у сундука поворачивается ключ и откидывается крышка, у арфы вибрируют струны, палец нажимает кнопку «Купить» на смартфоне, крутятся барабаны автомата, извергается вулкан и машет крыльями дракон. При показе слайда PowerPoint запускает эффект «Сцена» (`presetID="100"`) автоматически и крутит бесшовный цикл.
-* **Кинематографичный 3D-Morph между слайдами** — экспонаты влетают справа и улетают влево с разворотом в пространстве через закадровые «призраки» (`!!m-...`), а 3D-луидор или шестерня катится по верхней шкале прогресса.
-* **100% редактируемая вёрстка и честный фолбэк** — все заголовки, карточки и заметки докладчика нативные. А для старых версий, Google Slides, Keynote, LibreOffice и веб-просмотрщиков внутрь каждого `mc:AlternateContent` автоматически запечён студийный Cycles PNG-рендер в том же ракурсе.
-* **Никакого «ИИ-мыла»** — модели строятся процедурной геометрией в Python (`bpy`), фоны, свечения и тени считаются математически (`numpy`), а каждый факт подкреплён таблицей источников.
+Обычные «ИИ-презентации» — это либо скучные шаблонные буллеты, либо сплющенные сгенерированные картинки, где нельзя поправить ни одной буквы. Здесь работает полноценный 3D-пайплайн:
+
+* **Настоящие 3D-объекты (`am3d:model3d`)** — внутрь `.pptx` вшиваются реальные `.glb`-модели без фона. В редакторе их можно крутить мышкой на 360°, менять ракурс и масштаб.
+* **Скелетная анимация деталей (`a3danim:embedAnim`)** — у сундука поворачивается ключ и откидывается крышка, у арфы вибрируют струны, палец жмёт «Купить» на смартфоне, крутятся барабаны слот-машины, извергается вулкан и машет крыльями дракон. PowerPoint сам запускает эффект «Сцена» (`presetID="100"`) по кругу.
+* **Кинематографичный 3D-Morph** — при переключении слайдов (<kbd>→</kbd> / <kbd>Space</kbd>) экспонаты влетают справа и улетают влево с разворотом в пространстве через закадровые «призраки» (`!!m-...`), а 3D-жетон катится по шкале прогресса.
+* **Редактируемый текст + честный фолбэк** — вся типографика и заметки докладчика нативные, а внутри `mc:AlternateContent` автоматически запечён студийный Cycles PNG-рендер для старых версий и веб-просмотрщиков.
+
+<br clear="right"/>
 
 <details>
-<summary><b>Посмотреть живую сетку 3D-экспонатов и раскадровку полной 13-слайдовой презентации</b></summary>
+<summary><b>Развернуть полный контакт-лист 13-слайдовой презентации «Психология импульсивных трат»</b></summary>
 <br>
 <p align="center">
-  <img src="exports/impulse-animations-preview.gif" alt="Скелетные анимации 13 экспонатов презентации об импульсивных тратах" width="96%">
-</p>
-<p align="center">
-  <img src="exports/impulse-preview.jpg" alt="Контакт-лист всех 13 слайдов презентации «Психология импульсивных трат»" width="96%">
+  <img src="exports/impulse-preview.jpg" alt="Контакт-лист всех 13 слайдов презентации «Психология импульсивных трат»" width="98%">
 </p>
 </details>
 
 ---
 
-## Как работает конвейер
+## Архитектура конвейера
 
-```text
-Blender (Python, headless bpy)              Node.js (pptxgenjs + Chromium)        OpenXML пост-обработка (JSZip)
-──────────────────────────────              ──────────────────────────────        ──────────────────────────────
-models/make_models.py                       stage.py ──► фон, свет, тень          pptx3d.js:
-  └─ процедурные меши + материалы M()       build.js (через lib.js):                ├─ заглушка ──► am3d:model3d + .glb
-models/rig.py                                 ├─ единое описание слайдов            ├─ расчёт 3D-камеры по bounding sphere
-  └─ кости + запекание anim(t) ──► *.glb      ├─ toPptx() ──► черновой .pptx        ├─ a3danim:embedAnim + авто-«Сцена»
-models/render.py                              └─ toHtml() ──► slide-XX.png          ├─ Morph-переходы и каскад появления
-  └─ Cycles PNG-постеры (кэш по md5)                                                └─ SHA-1 дедупликация медиа ──► exports/
+```mermaid
+flowchart LR
+    subgraph PY["1 · Headless Blender (Python / bpy)"]
+        MM["make_models.py<br/>процедурные меши + M()"] --> RIG["rig.py<br/>кости + anim(t) → *.glb"]
+        RIG --> REN["render.py<br/>Cycles PNG-постеры (md5)"]
+        STG["stage.py (numpy)<br/>фон, свечение, тень"]
+    end
+
+    subgraph JS["2 · Сборка слайдов (Node.js)"]
+        LIB["build.js + lib.js<br/>единое описание слайдов"]
+        LIB --> PPT["toPptx() · pptxgenjs<br/>черновой .pptx с заглушками"]
+        LIB --> HTM["toHtml() · Chromium<br/>PNG-превью slide-XX.png"]
+    end
+
+    subgraph XML["3 · OpenXML 3D и QA"]
+        P3D["pptx3d.js · JSZip<br/>am3d:model3d + embedAnim + Morph"]
+        QA["validate-pptx.py + contact-sheet.py<br/>валидация XML и лист превью"]
+        OUT(["exports/*.pptx<br/>+ script · sources · gif"])
+    end
+
+    RIG ==> P3D
+    REN --> LIB
+    STG --> LIB
+    PPT ==> P3D
+    P3D ==> QA
+    HTM --> QA
+    QA ==> OUT
+
+    classDef pyNode fill:#1e162b,stroke:#e3b663,stroke-width:1.5px,color:#f5efe6;
+    classDef jsNode fill:#13221c,stroke:#34d399,stroke-width:1.5px,color:#ecfdf5;
+    classDef xmlNode fill:#1b1630,stroke:#a78bfa,stroke-width:1.5px,color:#f3e8ff;
+    classDef outNode fill:#3b1d16,stroke:#f97316,stroke-width:2px,color:#fff7ed;
+    class MM,RIG,REN,STG pyNode;
+    class LIB,PPT,HTM jsNode;
+    class P3D,QA xmlNode;
+    class OUT outNode;
 ```
 
 ---
 
-## Структура репозитория
+## Навигация по репозиторию
 
 | Папка / файл | Роль в проекте |
 |---|---|
 | **[`AGENTS.md`](AGENTS.md)** | **Инструкция для ИИ-агента (SOP):** пошаговый алгоритм, как с нуля собрать новую 3D-презентацию, проверить её глазами и прогнать валидацию |
-| **[`train-ai/`](train-ai/)** | **Глубокий технический учебник (6 глав + демо):** устройство headless Blender без X11/GPU, процедурное моделирование, скелетный риггинг, XML-спецификация `am3d:model3d`, дизайн-система слайдов и полный список граблей |
+| **[`train-ai/`](train-ai/)** | **Глубокий технический учебник (6 глав + демо):** headless Blender без X11/GPU, процедурное моделирование, скелетный риггинг, XML-спецификация `am3d:model3d`, дизайн-система слайдов и полный список граблей |
 | **[`presentations/`](presentations/)** | **Примеры презентаций (и общий движок):** исходники 5 эталонных презентаций разных форматов + общие модули (`schumpeter/lib.js`, `pptx3d.js`, `cantillon/models/rig.py`) и CLI-утилиты в `presentations/tools/` |
 | **[`exports/`](exports/)** | **Примеры экспорта:** готовые собранные `.pptx`, тексты устных выступлений (`*-script.md`), таблицы источников (`*-sources.md`), контакт-листы слайдов (`*-preview.jpg`) и GIF-анимации (`*-animations-preview.gif`) |
 
@@ -73,7 +120,7 @@ models/render.py                              └─ toHtml() ──► slide-XX
 
 ## Примеры презентаций (`presentations/`) и примеры экспорта (`exports/`)
 
-В репозитории уже собраны **5 разноплановых проектов** (суммарно **42 слайда** и **более 45 уникальных процедурных 3D-моделей**):
+В репозитории собраны **5 разноплановых проектов** (суммарно **42 слайда** и **более 45 уникальных процедурных 3D-моделей**):
 
 | Проект | Исходники (пример презентации) | Готовый файл (пример экспорта) | Масштаб и начинка |
 |---|---|---|---|
@@ -83,13 +130,14 @@ models/render.py                              └─ toHtml() ──► slide-XX
 | **Три чуда (`wow`)** | [`presentations/wow/`](presentations/wow/) | [`exports/wow-3d-wonders.pptx`](exports/wow-3d-wonders.pptx)<br>[`wow-wonders-script.md`](exports/wow-wonders-script.md) | **3 слайда · шоурил сложных сцен**<br>Маяк с двумя вращающимися лучами, волнами и парящей чайкой (14 костей), ярмарочная карусель со скачущими лошадками (5 костей), торнадо из 6 колец с обломками и молнией (15 костей) |
 | **Остров огня (`fun`)** | [`presentations/fun/`](presentations/fun/) | [`exports/fun-fire-island.pptx`](exports/fun-fire-island.pptx)<br>[`fun-fire-island-script.md`](exports/fun-fire-island-script.md) | **1 фан-слайд · 5 живых моделей сразу (64 кости)**<br>Диорама извергающегося вулкана с орбитальным огнедышащим драконом и буквами `INFERNO` в окружении двух пылающих факелов и двух кипящих лава-чаш |
 
-Минимальный учебный пример всего конвейера на ~100 строк кода (шкатулка с откидной крышкой и подпрыгивающей монетой → однослайдовый `demo.pptx`) лежит в [`train-ai/examples/`](train-ai/examples/).
+> [!NOTE]
+> Минимальный учебный пример всего конвейера на ~100 строк кода (шкатулка с откидной крышкой и подпрыгивающей монетой → однослайдовый `demo.pptx`) лежит в [`train-ai/examples/`](train-ai/examples/).
 
 ---
 
 ## Как дать задачу ИИ-агенту
 
-Подключи репозиторий к своему кодинг-агенту и дай запрос в свободной форме — агент сам прочитает [`AGENTS.md`](AGENTS.md) и [`train-ai/`](train-ai/):
+Подключи репозиторий к кодинг-агенту и отправь задачу в свободной форме — агент автоматически подхватит [`AGENTS.md`](AGENTS.md) и справочник [`train-ai/`](train-ai/):
 
 ```text
 Прочитай AGENTS.md и train-ai/, посмотри примеры в presentations/ и exports/.
@@ -118,7 +166,7 @@ LD_LIBRARY_PATH=/tmp/bstub python3 train-ai/examples/box_with_lid.py   # → tra
 node train-ai/examples/mini_deck.js                                    # → train-ai/examples/out/demo.pptx
 ```
 
-### 3. Пересобрать любую презентацию и проверить результат
+### 3. Пересобрать любую презентацию и провалидировать `.pptx`
 
 ```bash
 cd presentations/cantillon
@@ -128,19 +176,27 @@ python3 stage.py                                                       # сге�
 node build.js --preview                                                # собрать .pptx в exports/ + PNG слайдов
 cd ../..
 
-# Собрать контакт-лист всех слайдов и провалидировать структуру .pptx:
+# Собрать контакт-лист всех слайдов и проверить структуру OpenXML:
 python3 presentations/tools/contact-sheet.py presentations/cantillon/preview exports/cantillon-preview.jpg
 python3 presentations/tools/validate-pptx.py exports/cantillon-3d-presentation.pptx --expect-slides 10
 ```
 
-> **Совет для быстрой вёрстки:** запуск `FAST=1 node build.js --preview --only=1,3` рендерит черновые растры в низком разрешении и снимает скриншоты только выбранных слайдов за секунды.
+> [!TIP]
+> **Быстрая итерация по вёрстке:** запуск `FAST=1 node build.js --preview --only=1,3` рендерит черновые растры в низком разрешении и снимает скриншоты только выбранных слайдов за считанные секунды.
 
 ---
 
 ## Совместимость `.pptx`
 
-| Среда открытия | 3D-модели (вращение мышью) | Анимация частей модели («Сцена») | Переходы Morph | Текст, верстка и заметки |
+> [!IMPORTANT]
+> Полная интерактивность 3D-моделей, скелетные циклы «Сцена» и переходы **3D Morph** раскрываются в десктопном **PowerPoint 365 / PowerPoint 2021+** (Windows и macOS) в режиме показа слайдов (<kbd>F5</kbd>). Во всех остальных просмотрщиках презентация открывается аккуратно за счёт встроенных Cycles PNG-фолбэков.
+
+| Среда открытия | 3D-модели (вращение мышью) | Анимация частей модели («Сцена») | Переходы Morph | Текст, вёрстка и заметки |
 |---|:---:|:---:|:---:|:---:|
 | **PowerPoint 365 / 2021+ (Windows, macOS)** | Да (нативно) | Да (автоцикл) | Да (3D Morph) | Полностью редактируемые |
 | **PowerPoint 2019** | Да | Частично / постер | Да | Полностью редактируемые |
 | **Старый PowerPoint, Keynote, Google Slides, LibreOffice, Moodle** | Авто-фолбэк в Cycles PNG | Статичный постер кадра 0 | Авто-фолбэк в Fade | Полностью сохраняются |
+
+<p align="center">
+  <img src=".github/assets/footer-wave.svg" alt="" width="100%">
+</p>

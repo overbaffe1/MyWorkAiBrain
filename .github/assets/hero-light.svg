@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 280" width="1200" height="280" role="img" aria-label="MyWorkAiBrain — Конвейер живых 3D-презентаций для PowerPoint">
+  <defs>
+    <linearGradient id="bgL" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBF8F3"/>
+      <stop offset="55%" stop-color="#F4EFE6"/>
+      <stop offset="100%" stop-color="#EDE7FA"/>
+    </linearGradient>
+    <linearGradient id="titleGradL" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1E1418"/>
+      <stop offset="60%" stop-color="#5B3A12"/>
+      <stop offset="100%" stop-color="#8B5A19"/>
+    </linearGradient>
+    <linearGradient id="accentLineL" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#B87D24"/>
+      <stop offset="55%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#0284C7" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="stageGlowL" cx="80%" cy="50%" r="36%">
+      <stop offset="0%" stop-color="#E3B663" stop-opacity="0.32"/>
+      <stop offset="52%" stop-color="#7C3AED" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#FBF8F3" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="cardClipL">
+      <rect x="0" y="0" width="1200" height="280" rx="18"/>
+    </clipPath>
+    <style>
+      .kicker { font: 700 11.5px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; fill: #9A6412; letter-spacing: 2.4px; }
+      .title { font: 700 50px Georgia, 'Times New Roman', serif; fill: url(#titleGradL); }
+      .sub { font: 400 17px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; fill: #3E332E; }
+      .pipe { font: 600 13.5px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; fill: #6D28D9; }
+      .chip-txt { font: 600 12px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; fill: #2B211D; }
+      .chip-num { fill: #9A6412; font-weight: 700; }
+      .float-rig { animation: bob 4.6s ease-in-out infinite; transform-origin: 975px 140px; }
+      .pulse-cursor { animation: blink 1.1s steps(2, start) infinite; }
+      @keyframes bob {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-9px); }
+      }
+      @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.15; }
+      }
+    </style>
+  </defs>
+
+  <g clip-path="url(#cardClipL)">
+    <rect width="1200" height="280" fill="url(#bgL)"/>
+    <rect width="1200" height="280" fill="url(#stageGlowL)"/>
+
+    <path fill="#7C3AED" fill-opacity="0.06">
+      <animate attributeName="d" dur="10s" repeatCount="indefinite"
+        values="M0,235 C300,205 620,268 920,232 C1060,215 1140,225 1200,234 L1200,280 L0,280 Z;
+                M0,244 C320,268 600,206 910,242 C1050,258 1140,236 1200,226 L1200,280 L0,280 Z;
+                M0,235 C300,205 620,268 920,232 C1060,215 1140,225 1200,234 L1200,280 L0,280 Z"/>
+    </path>
+
+    <g transform="translate(975, 140)">
+      <circle r="112" fill="none" stroke="#9A6412" stroke-opacity="0.18" stroke-width="1"/>
+      <circle r="92" fill="none" stroke="#9A6412" stroke-opacity="0.40" stroke-width="1.3" stroke-dasharray="5 7">
+        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="38s" repeatCount="indefinite"/>
+      </circle>
+      <circle r="70" fill="none" stroke="#6D28D9" stroke-opacity="0.34" stroke-width="1.3" stroke-dasharray="18 8 3 8">
+        <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="26s" repeatCount="indefinite"/>
+      </circle>
+      <ellipse rx="84" ry="26" fill="none" stroke="#9A6412" stroke-opacity="0.30" stroke-width="1.1" transform="rotate(-18)"/>
+      <g>
+        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="14s" repeatCount="indefinite"/>
+        <circle cx="92" cy="0" r="3.4" fill="#B87D24"/>
+        <circle cx="-70" cy="0" r="2.8" fill="#6D28D9"/>
+      </g>
+    </g>
+
+    <g class="float-rig">
+      <polygon points="975,84 934,136 975,152" fill="#E3B663" stroke="#8B5A19" stroke-width="1.1"/>
+      <polygon points="975,84 1016,136 975,152" fill="#C2882E" stroke="#8B5A19" stroke-width="1.1"/>
+      <polygon points="934,136 975,152 975,198" fill="#7C3AED" fill-opacity="0.82" stroke="#5B21B6" stroke-width="1.1"/>
+      <polygon points="1016,136 975,152 975,198" fill="#5B21B6" fill-opacity="0.90" stroke="#4C1D95" stroke-width="1.1"/>
+      <circle cx="975" cy="84" r="3.2" fill="#5B3A12"/>
+      <circle cx="975" cy="152" r="3.2" fill="#FFFBEB"/>
+      <circle cx="975" cy="198" r="3.0" fill="#4C1D95"/>
+    </g>
+
+    <rect x="52" y="34" width="34" height="2" fill="#9A6412"/>
+    <text x="96" y="39" class="kicker">AI PIPELINE · BLENDER BPY · OPENXML 3D</text>
+
+    <text x="52" y="104" class="title">MyWorkAiBrain</text>
+    <rect x="52" y="120" width="540" height="2" fill="url(#accentLineL)"/>
+
+    <text x="52" y="154" class="sub">Генерация живых редактируемых 3D-презентаций PowerPoint чистым кодом</text>
+
+    <text x="52" y="185" class="pipe">
+      &gt; bpy + rig.py ──► skinned .glb ──► am3d:model3d + Morph ──► .pptx
+      <tspan class="pulse-cursor" fill="#B87D24">▋</tspan>
+    </text>
+
+    <g transform="translate(52, 214)">
+      <rect x="0" y="0" width="166" height="32" rx="8" fill="#FFFFFF" fill-opacity="0.75" stroke="#B87D24" stroke-opacity="0.45"/>
+      <text x="14" y="20" class="chip-txt"><tspan class="chip-num">5</tspan> эталонных проектов</text>
+
+      <rect x="178" y="0" width="150" height="32" rx="8" fill="#FFFFFF" fill-opacity="0.75" stroke="#B87D24" stroke-opacity="0.45"/>
+      <text x="192" y="20" class="chip-txt"><tspan class="chip-num">42</tspan> живых слайда</text>
+
+      <rect x="340" y="0" width="194" height="32" rx="8" fill="#FFFFFF" fill-opacity="0.75" stroke="#7C3AED" stroke-opacity="0.40"/>
+      <text x="354" y="20" class="chip-txt"><tspan class="chip-num">45+</tspan> процедурных 3D-сцен</text>
+
+      <rect x="546" y="0" width="168" height="32" rx="8" fill="#FFFFFF" fill-opacity="0.75" stroke="#0284C7" stroke-opacity="0.40"/>
+      <text x="560" y="20" class="chip-txt"><tspan class="chip-num">0</tspan> нейрокартинок</text>
+    </g>
+
+    <rect x="0.75" y="0.75" width="1198.5" height="278.5" rx="17.5" fill="none" stroke="#B87D24" stroke-opacity="0.38" stroke-width="1.5"/>
+  </g>
+</svg>
