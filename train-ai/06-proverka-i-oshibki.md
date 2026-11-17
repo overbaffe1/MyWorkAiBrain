@@ -13,16 +13,16 @@
    print([(a["name"], len(a["channels"])) for a in g["animations"]], [len(s["joints"]) for s in g["skins"]])
    # ожидается ОДНА анимация и ОДИН skin
    ```
-4. **pptx валиден и анимации на месте:**
-   ```python
-   import zipfile; from lxml import etree
-   z = zipfile.ZipFile("exports/cantillon-3d-presentation.pptx")
-   for i in range(1, 11):
-       s = z.read(f"ppt/slides/slide{i}.xml"); etree.fromstring(s); s = s.decode()
-       print(i, "embedAnim" in s, 'presetID="100"' in s)    # модель с анимацией + авто-«Сцена»
-   from pptx import Presentation; Presentation("exports/…pptx")   # открывается python-pptx
+4. **pptx валиден и анимации на месте** (готовая утилита в репозитории):
+   ```bash
+   python3 presentations/tools/validate-pptx.py exports/cantillon-3d-presentation.pptx --expect-slides 10
    ```
-5. **PNG-превью всех слайдов** просмотрены (сеткой 2×5): переносы заголовков, наложения, мелкий текст.
+   Скрипт проверяет все XML/`.rels`, отсутствие Draco в `.glb`, наличие ровно 1 анимации и skin у ригнутых моделей,
+   уникальность имён `am3d:model3d` на каждом слайде, `embedAnim`, эффект `presetID="100"`, Morph и заметки докладчика.
+5. **PNG-превью всех слайдов** склеены в контакт-лист и просмотрены глазами: переносы заголовков, наложения, мелкий текст:
+   ```bash
+   python3 presentations/tools/contact-sheet.py presentations/cantillon/preview exports/cantillon-preview.jpg
+   ```
 6. Текст выступления и источники обновлены под новую нумерацию слайдов.
 7. Закоммичено и запушено; `git ls-remote` совпадает с `HEAD`.
 8. Пользователю честно сказано: анимация моделей играет в **PowerPoint 365 / 2021+**; в старых версиях, Keynote,
